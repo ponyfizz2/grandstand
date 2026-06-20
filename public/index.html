@@ -5,24 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#07131C" media="(prefers-color-scheme: dark)">
     <meta name="theme-color" content="#f6f8fb" media="(prefers-color-scheme: light)">
-    <meta name="description" content="Roarline — live scores, match rooms and fan conversation in one place.">
+    <meta name="description" content="SportlySocial brings live scores, real fans and one room for every game together.">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Roarline">
-    <title>Roarline — Live scores and match rooms</title>
-    <link rel="icon" type="image/svg+xml" href="brand/roarline-app-icon.svg">
-    <link rel="manifest" href="manifest.json?v=32">
-    <link rel="apple-touch-icon" href="brand/roarline-app-icon.svg">
-    <link rel="stylesheet" href="css/styles.css?v=32">
+    <meta name="apple-mobile-web-app-title" content="SportlySocial">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="SportlySocial — Live scores and match rooms">
+    <meta property="og:description" content="Live scores. Real fans. One room for every game.">
+    <meta property="og:url" content="https://ponyfizz2.github.io/grandstand/">
+    <meta property="og:image" content="https://ponyfizz2.github.io/grandstand/brand/sportlysocial-social-preview.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="SportlySocial — Live scores and match rooms">
+    <meta name="twitter:description" content="Live scores. Real fans. One room for every game.">
+    <meta name="twitter:image" content="https://ponyfizz2.github.io/grandstand/brand/sportlysocial-social-preview.png">
+    <title>SportlySocial — Live scores and match rooms</title>
+    <link rel="icon" type="image/png" href="brand/favicon.png">
+    <link rel="manifest" href="manifest.json?v=33">
+    <link rel="apple-touch-icon" href="brand/apple-touch-icon.png">
+    <link rel="stylesheet" href="css/styles.css?v=33">
   </head>
   <body data-theme="dark">
-    <div class="build-badge" id="build-badge">ROARLINE v32 · fan rooms</div>
+    <div class="build-badge" id="build-badge">SPORTLYSOCIAL v33 · otter brand</div>
 
     <!-- Auth Modal -->
     <div id="auth-modal" class="modal-overlay is-hidden" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
       <div class="modal">
         <div class="modal-header">
-          <img class="brand-logo-modal" src="brand/roarline-logo-horizontal.svg" alt="Roarline">
+          <img class="brand-logo-modal" src="brand/sportlysocial-logo-reverse.png" alt="SportlySocial">
         </div>
         <div class="modal-body auth-modal-body" id="auth-modal-body">
           <div class="auth-view" id="auth-provider-view">
@@ -74,7 +83,7 @@
     <div id="onboarding-modal" class="modal-overlay is-hidden" role="dialog" aria-modal="true" aria-labelledby="onboarding-title">
       <div class="modal modal-wide">
 	        <div class="modal-header">
-	          <img class="brand-logo-modal" src="brand/roarline-logo-horizontal.svg" alt="Roarline">
+	          <img class="brand-logo-modal" src="brand/sportlysocial-logo-reverse.png" alt="SportlySocial">
 	          <span class="modal-step" id="onboarding-step-label">Step 1 of 3</span>
 	        </div>
         <div class="modal-body" id="onboarding-body">
@@ -100,7 +109,7 @@
           </div>
           <!-- Step 3: Identity and display -->
           <div id="onboarding-step-3" class="is-hidden">
-            <h2>Set your match-day identity <span class="build-inline">v32</span></h2>
+            <h2>Set your match-day identity <span class="build-inline">v33</span></h2>
             <p class="modal-subtitle">Choose your timezone, favourite team and chat icon.</p>
             <div class="field-group">
               <label class="field-label" for="onboarding-tz-select">Time zone</label>
@@ -223,7 +232,7 @@
     <div id="sports-picker-modal" class="modal-overlay is-hidden" role="dialog" aria-modal="true" aria-labelledby="sports-picker-title">
       <div class="modal modal-wide">
         <div class="modal-header">
-          <img class="brand-logo-modal" src="brand/roarline-logo-horizontal.svg" alt="Roarline">
+          <img class="brand-logo-modal" src="brand/sportlysocial-logo-reverse.png" alt="SportlySocial">
           <button type="button" class="btn-icon" id="sports-picker-close" aria-label="Close sports picker">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
@@ -284,12 +293,12 @@
         <form class="chat-form" id="chat-form">
           <div class="chat-compose-row">
             <input type="text" id="chat-input" class="chat-input" placeholder="Join the conversation..." maxlength="280" autocomplete="off">
-            <button type="submit" class="btn-send" aria-label="Post to Roarline">
+            <button type="submit" class="btn-send" aria-label="Post to SportlySocial">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
             </button>
           </div>
           <div class="crosspost-options" aria-label="Cross-posting options">
-            <span>Post to Roarline</span>
+            <span>Post to SportlySocial</span>
             <label title="Connect X in Profile to enable"><input type="checkbox" disabled> Also post to X</label>
             <label title="Connect Facebook in Profile to enable"><input type="checkbox" disabled> Also post to Facebook</label>
             <button type="button" class="btn-text-small" data-app-view-link="profile">Connect accounts</button>
@@ -360,8 +369,9 @@
     <header class="app-header app-topbar">
       <div class="header-brand">
         <h1 class="brand-lockup">
-          <img class="brand-logo-horizontal" src="brand/roarline-logo-horizontal.svg" alt="Roarline">
-          <img class="brand-logo-compact" src="brand/roarline-icon.svg" alt="" aria-hidden="true">
+          <img class="brand-logo-horizontal brand-logo-light" src="brand/sportlysocial-logo-horizontal.png" alt="SportlySocial">
+          <img class="brand-logo-horizontal brand-logo-dark" src="brand/sportlysocial-logo-reverse.png" alt="SportlySocial">
+          <img class="brand-logo-compact" src="brand/sportlysocial-app-icon.png" alt="" aria-hidden="true">
         </h1>
         <p class="eyebrow" id="time-zone-eyebrow">Kickoff times in New Zealand time</p>
       </div>
@@ -378,7 +388,7 @@
           <strong id="current-time">--:--</strong>
           <span id="current-date">Loading</span>
         </div>
-        <button type="button" class="btn-icon" id="btn-global-search" aria-label="Search Roarline">
+        <button type="button" class="btn-icon" id="btn-global-search" aria-label="Search SportlySocial">
           <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
         </button>
         <div id="auth-header-area" class="auth-header-area"></div>
@@ -517,7 +527,7 @@
         </section>
 
         <section class="app-view" id="view-profile" data-app-view-panel="profile">
-          <div class="page-intro"><div><p class="section-kicker">Profile</p><h2>Your Roarline identity</h2><p>Manage how you appear in match rooms and how Roarline works for you.</p></div></div>
+          <div class="page-intro"><div><p class="section-kicker">Profile</p><h2>Your SportlySocial identity</h2><p>Manage how you appear in match rooms and how SportlySocial works for you.</p></div></div>
           <div id="profile-content" class="profile-content"></div>
         </section>
       </div>
@@ -554,7 +564,7 @@
           <button type="button" class="btn-icon" id="search-close" aria-label="Close search">×</button>
         </div>
         <input type="search" class="field-input search-input" id="global-search-input" placeholder="Try Warriors, NBA or a match room" autocomplete="off">
-        <div class="search-results" id="global-search-results"><p class="empty-state">Start typing to search Roarline.</p></div>
+        <div class="search-results" id="global-search-results"><p class="empty-state">Start typing to search SportlySocial.</p></div>
       </div>
     </div>
 
@@ -563,18 +573,18 @@
     <script>
       window.GRANDSTAND_EXPECTED_AUTH_BUILD = "github-pages-auth-v22";
     </script>
-    <script src="brand/brand.js?v=32"></script>
-    <script src="js/config.js?v=32"></script>
-    <script src="js/identity.js?v=32"></script>
-    <script src="js/auth-v22.js?v=32"></script>
-    <script src="js/chat.js?v=32"></script>
-    <script src="js/script.js?v=32"></script>
-    <script src="js/sw-register.js?v=32"></script>
+    <script src="brand/brand.js?v=33"></script>
+    <script src="js/config.js?v=33"></script>
+    <script src="js/identity.js?v=33"></script>
+    <script src="js/auth-v22.js?v=33"></script>
+    <script src="js/chat.js?v=33"></script>
+    <script src="js/script.js?v=33"></script>
+    <script src="js/sw-register.js?v=33"></script>
     <script>
       (() => {
         const expected = window.GRANDSTAND_EXPECTED_AUTH_BUILD;
         const showDiagnostic = (message) => {
-          console.error("[Roarline Diagnostics]", message, {
+          console.error("[SportlySocial Diagnostics]", message, {
             expected,
             actual: window.gs?.authBuild || null,
             protocol: window.location.protocol,
@@ -595,11 +605,11 @@
             const actual = window.gs?.authBuild || "";
             const authScript = [...document.scripts].find(script => script.src.includes("auth-"))?.getAttribute("src") || "";
             if (!authScript.includes("auth-v22.js")) {
-              showDiagnostic(`Roarline loaded the wrong auth script: ${authScript || "none"}.`);
+              showDiagnostic(`SportlySocial loaded the wrong auth script: ${authScript || "none"}.`);
               return;
             }
             if (actual !== expected) {
-              showDiagnostic(`Roarline loaded stale app files. Expected ${expected}, got ${actual || "nothing"}.`);
+              showDiagnostic(`SportlySocial loaded stale app files. Expected ${expected}, got ${actual || "nothing"}.`);
               return;
             }
 

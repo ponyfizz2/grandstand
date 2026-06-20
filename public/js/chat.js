@@ -1,5 +1,5 @@
 /**
- * Roarline — Live Chat Module
+ * SportlySocial — Live Chat Module
  * Uses Supabase Realtime for live match social feed.
  * Only active when a game is live and user opens chat.
  */
@@ -131,7 +131,7 @@
       localStorage.setItem("gs.recentRooms", JSON.stringify(next));
       document.dispatchEvent(new CustomEvent("gs:recent-rooms-changed", { detail: next }));
     } catch (error) {
-      console.warn("[Roarline Chat] Could not save recent room:", error);
+      console.warn("[SportlySocial Chat] Could not save recent room:", error);
     }
   }
 

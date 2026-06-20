@@ -1,18 +1,17 @@
-# Roarline
+# SportlySocial
 
-Live scores, match rooms and fan conversation in one place.
+Live scores. Real fans. One room for every game.
 
 ## Brand assets
 
 The active product name and reusable asset paths live in
-`public/brand/brand.js`. The default mark is the Signal R.
+`public/brand/brand.js`. The default mark is the headband otter.
 
-- Horizontal logo: `public/brand/roarline-logo-horizontal.svg`
-- Compact mark: `public/brand/roarline-icon.svg`
-- Monochrome logo: `public/brand/roarline-logo-mono.svg`
-- App icon: `public/brand/roarline-app-icon.svg`
-- Alternate B: `public/brand/roarline-logo-b-stadium-speech.svg`
-- Alternate C: `public/brand/roarline-logo-c-ticker-wave.svg`
+- Horizontal logo: `public/brand/sportlysocial-logo-horizontal.png`
+- Stacked logo: `public/brand/sportlysocial-logo-stacked.png`
+- Reverse logo: `public/brand/sportlysocial-logo-reverse.png`
+- Compact/app mark: `public/brand/sportlysocial-app-icon.png`
+- Social preview: `public/brand/sportlysocial-social-preview.png`
 
 To replace the logo later, keep these filenames or update the paths in
 `public/brand/brand.js` and the corresponding `<img>` references in
@@ -102,7 +101,7 @@ Commit and push to `main`:
 
 ```bash
 git add .
-git commit -m "Deploy Roarline"
+git commit -m "Deploy SportlySocial"
 git push origin main
 ```
 

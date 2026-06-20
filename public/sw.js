@@ -1,5 +1,5 @@
 /**
- * Roarline — Service Worker (sw.js)
+ * SportlySocial — Service Worker (sw.js)
  *
  * Strategy:
  *  - App shell (HTML, CSS, JS): Network-first with cache fallback
@@ -10,7 +10,7 @@
  * Cache names are versioned — bump CACHE_VERSION on each deploy.
  */
 
-const CACHE_VERSION    = 'roarline-v32';
+const CACHE_VERSION    = 'sportlysocial-v33';
 const SHELL_CACHE      = `${CACHE_VERSION}-shell`;
 const DATA_CACHE       = `${CACHE_VERSION}-data`;
 const ESPN_CACHE_TTL   = 5 * 60 * 1000; // 5 minutes
@@ -27,14 +27,13 @@ const SHELL_ASSETS = [
   '/js/chat.js',
   '/manifest.json',
   '/brand/brand.js',
-  '/brand/roarline-logo-horizontal.svg',
-  '/brand/roarline-icon.svg',
-  '/brand/roarline-logo-mono.svg',
-  '/brand/roarline-app-icon.svg',
-  '/brand/roarline-logo-b-stadium-speech.svg',
-  '/brand/roarline-logo-c-ticker-wave.svg',
-  '/assets/icons/icon-192.png',
-  '/assets/icons/icon-512.png',
+  '/brand/sportlysocial-logo-horizontal.png',
+  '/brand/sportlysocial-logo-reverse.png',
+  '/brand/sportlysocial-logo-stacked.png',
+  '/brand/sportlysocial-app-icon.png',
+  '/brand/favicon.png',
+  '/brand/icon-192.png',
+  '/brand/icon-512.png',
   // Supabase CDN (cached by the browser but listed for completeness)
   'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js',
 ];
@@ -61,7 +60,11 @@ self.addEventListener('activate', event => {
     caches.keys().then(keys =>
       Promise.all(
         keys
-          .filter(key => key.startsWith('gs-') && key !== SHELL_CACHE && key !== DATA_CACHE)
+          .filter(key =>
+            (key.startsWith('gs-') || key.startsWith('roarline-') || key.startsWith('sportlysocial-')) &&
+            key !== SHELL_CACHE &&
+            key !== DATA_CACHE
+          )
           .map(key => caches.delete(key))
       )
     ).then(() => self.clients.claim())
@@ -185,7 +188,8 @@ function isShellAsset(url) {
     url.pathname.endsWith('.js')   ||
     url.pathname.endsWith('.json') && url.pathname !== '/manifest.json' ||
     url.pathname.startsWith('/assets/icons/') ||
-    url.pathname.startsWith('/assets/logos/')
+    url.pathname.startsWith('/assets/logos/') ||
+    url.pathname.startsWith('/brand/')
   );
 }
 

@@ -1,5 +1,5 @@
 /**
- * Roarline — Main App Script
+ * SportlySocial — Main App Script
  * Fixtures, results, tables, live scores, filtering, theme, timezone.
  * Refactored from Footy Watch with FIFA World Cup, dynamic competitions,
  * proper Intl timezone handling, and live chat integration.
@@ -1070,7 +1070,7 @@ function renderProfileSurface() {
 function guestActionTemplate(message) {
   return `
     <section class="guest-action">
-      <img src="brand/roarline-icon.svg" alt="">
+      <img src="brand/sportlysocial-app-icon.png" alt="">
       <h3>${escapeHtml(message)}</h3>
       <p>Guests can browse every score and read match rooms.</p>
       <div><button type="button" class="btn-primary" data-auth-action="signin">Sign in</button><button type="button" data-auth-action="signup">Create account</button></div>

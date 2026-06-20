@@ -1,7 +1,7 @@
 {
-  "name": "Roarline",
-  "short_name": "Roarline",
-  "description": "Live scores, match rooms and fan conversation in one place.",
+  "name": "SportlySocial",
+  "short_name": "SportlySocial",
+  "description": "Live scores. Real fans. One room for every game.",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#07131C",
@@ -12,15 +12,21 @@
   "categories": ["sports", "news", "social"],
   "icons": [
     {
-      "src": "brand/roarline-app-icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "brand/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "brand/roarline-app-icon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "brand/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "brand/maskable-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
       "purpose": "maskable"
     }
   ],
@@ -39,7 +45,7 @@
       "short_name": "Live",
       "description": "Jump to live games",
       "url": "./?tab=live",
-      "icons": [{ "src": "brand/roarline-icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+      "icons": [{ "src": "brand/icon-192.png", "sizes": "192x192", "type": "image/png" }]
     }
   ],
   "prefer_related_applications": false

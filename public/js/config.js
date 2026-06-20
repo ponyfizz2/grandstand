@@ -1,5 +1,5 @@
 /**
- * Roarline — Configuration
+ * SportlySocial — Configuration
  * ─────────────────────────────────────────────────────────────
  * Replace SUPABASE_URL and SUPABASE_ANON_KEY with your project
  * values from https://supabase.com/dashboard → Project Settings → API
@@ -9,9 +9,9 @@
  * in both Google Cloud Console AND Supabase Auth → Providers → Google.
  */
 
-const brand = window.ROARLINE_BRAND || {
-  name: "Roarline",
-  tagline: "Live scores. Match rooms. Fan voices.",
+const brand = window.SPORTLYSOCIAL_BRAND || {
+  name: "SportlySocial",
+  tagline: "Live scores. Real fans. One room for every game.",
 };
 
 window.GRANDSTAND_CONFIG = {

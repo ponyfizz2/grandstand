@@ -1,7 +1,7 @@
 /**
  * BUILD: github-pages-auth-v22
  *
- * Roarline — Auth Module
+ * SportlySocial — Auth Module
  * Handles Google OAuth via Supabase, user profiles, onboarding,
  * and settings panel population.
  */
@@ -806,7 +806,7 @@
     };
     if (actual >= expected) return;
 
-    console.error("[Roarline Auth] Chat icon picker rendered incompletely", window.gs.authDiagnostics);
+    console.error("[SportlySocial Auth] Chat icon picker rendered incompletely", window.gs.authDiagnostics);
     const warning = document.createElement("p");
     warning.className = "settings-note auth-diagnostic";
     warning.textContent = `Icon picker did not fully load (${actual}/${expected}) on build ${window.gs.authBuild}.`;

@@ -1,15 +1,20 @@
 /* ============================================================
-   ROARLINE — Styles
+   SPORTLYSOCIAL — Styles
    Mobile-first, CSS custom properties, dark/light theme
    ============================================================ */
 
 /* ── Tokens ──────────────────────────────────────────────── */
 :root {
   color-scheme: light;
-  --brand-bg: #07131C;
+  --brand-navy: #07131C;
   --brand-surface: #101D28;
-  --brand-primary: #5DA8FF;
-  --brand-accent: #44D7A8;
+  --brand-teal: #44D7A8;
+  --brand-cyan: #5DA8FF;
+  --brand-white: #FFFFFF;
+  --brand-muted: #A7B4C0;
+  --brand-bg: var(--brand-navy);
+  --brand-primary: var(--brand-cyan);
+  --brand-accent: var(--brand-teal);
   --brand-live: #F05A5A;
   --brand-text: #F3F7FA;
   --ink: #17202a;
@@ -138,13 +143,13 @@ body[data-theme="dark"] .gs-wordmark-large {
 
 .brand-logo-modal {
   display: block;
-  width: 152px;
+  width: 188px;
   height: auto;
 }
 
 .brand-lockup {
   display: block;
-  width: clamp(190px, 27vw, 300px);
+  width: clamp(210px, 27vw, 330px);
   margin: 4px 0 0;
   line-height: 0;
 }
@@ -158,6 +163,18 @@ body[data-theme="dark"] .gs-wordmark-large {
 
 .brand-logo-compact {
   display: none;
+}
+
+.brand-logo-dark {
+  display: none;
+}
+
+body[data-theme="dark"] .brand-logo-light {
+  display: none;
+}
+
+body[data-theme="dark"] .brand-logo-dark {
+  display: block;
 }
 
 .eyebrow, .section-kicker, .control-label, .clock-label, .settings-section-title {
@@ -2166,8 +2183,13 @@ body.onboarding-complete #onboarding-modal {
     display: none;
   }
 
+  body[data-theme="dark"] .brand-logo-horizontal {
+    display: none;
+  }
+
   .brand-logo-compact {
     display: block;
+    border-radius: 10px;
   }
 }
 
@@ -2326,7 +2348,7 @@ body.onboarding-complete #onboarding-modal {
   .settings-panel { width: 100vw; }
 }
 
-/* ── Roarline application shell ──────────────────────────── */
+/* ── SportlySocial application shell ─────────────────────── */
 :root {
   --bg: #07131C;
   --surface: #101D28;
@@ -2373,7 +2395,7 @@ select:focus-visible {
 }
 
 .app-topbar .brand-lockup {
-  width: 205px;
+  width: 232px;
   margin: 0;
 }
 

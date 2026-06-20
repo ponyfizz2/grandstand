@@ -1,29 +1,29 @@
 /**
- * Roarline cache cleanup.
+ * SportlySocial cache cleanup.
  *
  * During active development, stale service-worker app-shell caches are more
  * harmful than useful. This file intentionally unregisters existing service
- * workers and clears Roarline caches so deployed builds always use fresh
+ * workers and clears SportlySocial caches so deployed builds always use fresh
  * HTML, CSS, and JS.
  */
 
 (function () {
   "use strict";
 
-  const BUILD = "roarline-fan-rooms-v32";
+  const BUILD = "sportlysocial-otter-brand-v33";
   const CLEANUP_KEY = `gs.cacheCleanup.${BUILD}`;
 
   window.gs = window.gs || {};
   window.gs.cacheBuild = BUILD;
 
   if (!/^https?:$/.test(window.location.protocol)) {
-    console.info("[Roarline Cache] No service worker on", window.location.protocol);
+    console.info("[SportlySocial Cache] No service worker on", window.location.protocol);
     return;
   }
 
   window.addEventListener("load", () => {
     cleanupServiceWorkerCaches().catch(error => {
-      console.warn("[Roarline Cache] Cleanup failed:", error);
+      console.warn("[SportlySocial Cache] Cleanup failed:", error);
     });
   });
 
@@ -39,7 +39,11 @@
       const cacheNames = await caches.keys();
       await Promise.all(
         cacheNames
-          .filter(name => name.startsWith("gs-"))
+          .filter(name =>
+            name.startsWith("gs-") ||
+            name.startsWith("roarline-") ||
+            name.startsWith("sportlysocial-")
+          )
           .map(name => caches.delete(name))
       );
     }

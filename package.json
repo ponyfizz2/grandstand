@@ -1,7 +1,7 @@
 {
   "name": "grandstand",
   "version": "1.0.0",
-  "description": "Roarline — live sports scores, match rooms and fan conversation.",
+  "description": "SportlySocial — live sports scores, real fans and one room for every game.",
   "private": true,
   "type": "module",
   "engines": {
@@ -9,6 +9,7 @@
   },
   "scripts": {
     "dev": "npx serve public -l 3000",
+    "brand:build": "node scripts/build-sportlysocial-brand.mjs",
     "build": "echo 'Static site — no build step required.'",
     "lint": "npx eslint public/js/*.js",
     "deploy": "git push origin main"
@@ -16,6 +17,7 @@
   "devDependencies": {
     "eslint": "^9.0.0",
     "serve": "^14.2.3",
+    "sharp": "^0.35.2",
     "supabase": "^2.107.0"
   },
   "keywords": [
