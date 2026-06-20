@@ -307,10 +307,12 @@ const fixtures = [
 
 // ── App state ─────────────────────────────────────────────────
 const state = {
+  appView: "home",
   mode: "fixtures",
   competition: "all",
   window: "next",
   selectedTeam: "all",
+  roomFilter: "all",
   timeZone: normalizeTimeZone(localStorage.getItem("gs.timeZone") || browserTimeZone()),
   theme: localStorage.getItem("gs.theme") || "dark",
 };
@@ -375,6 +377,17 @@ const sportsCatalogEl = document.getElementById("sports-catalog");
 const sportsSearchEl = document.getElementById("sports-search");
 const sportsRegionFiltersEl = document.getElementById("sports-region-filters");
 const sportsTypeFiltersEl = document.getElementById("sports-type-filters");
+const liveStripListEl = document.getElementById("live-strip-list");
+const homeRoomListEl = document.getElementById("home-room-list");
+const homeNextListEl = document.getElementById("home-next-list");
+const homeResultListEl = document.getElementById("home-result-list");
+const roomDirectoryListEl = document.getElementById("room-directory-list");
+const socialRoomListEl = document.getElementById("social-room-list");
+const followingContentEl = document.getElementById("following-content");
+const profileContentEl = document.getElementById("profile-content");
+const searchOverlayEl = document.getElementById("search-overlay");
+const globalSearchInputEl = document.getElementById("global-search-input");
+const globalSearchResultsEl = document.getElementById("global-search-results");
 
 const sportsPickerState = {
   region: "all",
@@ -426,13 +439,18 @@ teamSelectEl.addEventListener("change", () => {
   closeMobileFilters();
 });
 
-document.querySelector(".mobile-bottom-nav")?.addEventListener("click", (e) => {
-  const modeButton = e.target.closest("[data-mobile-mode]");
-  if (modeButton) {
-    selectMode(modeButton.dataset.mobileMode);
-    closeMobileFilters();
-    window.scrollTo({ top: 0, behavior: "smooth" });
+document.addEventListener("click", (e) => {
+  const viewButton = e.target.closest("[data-app-view], [data-app-view-link]");
+  if (viewButton) {
+    const view = viewButton.dataset.appView || viewButton.dataset.appViewLink;
+    if (view) selectAppView(view, viewButton.dataset.scoreMode);
   }
+  const settingsButton = e.target.closest("[data-open-settings]");
+  if (settingsButton) window.gs?.openSettings?.();
+  const authButton = e.target.closest("[data-auth-action]");
+  if (authButton) window.gs?.openAuth?.(authButton.dataset.authAction);
+  const roomButton = e.target.closest("[data-open-room-id]");
+  if (roomButton) openRoomById(roomButton.dataset.openRoomId);
 });
 document.getElementById("btn-mobile-filters")?.addEventListener("click", () => {
   controlsEl?.classList.add("filters-open");
@@ -445,11 +463,21 @@ favoriteLiveListEl?.addEventListener("click", (e) => {
   ensureCompetitionQuickButton(state.competition);
   setActive(document.querySelector(`#competition-filters button[data-filter="${cssEscape(state.competition)}"]`), "#competition-filters");
   populateTeamSelect();
+  selectAppView("scores");
   selectMode(card.dataset.forYouMode || "fixtures");
   document.getElementById("fixtures-title")?.scrollIntoView({ behavior: "smooth", block: "start" });
 });
 
 document.getElementById("btn-browse-sports")?.addEventListener("click", openSportsPicker);
+document.getElementById("chip-sport-filter")?.addEventListener("click", openSportsPicker);
+document.getElementById("chip-team-filter")?.addEventListener("click", () => {
+  controlsEl?.classList.add("filters-open");
+  teamSelectEl?.focus();
+});
+document.getElementById("chip-window-filter")?.addEventListener("click", () => {
+  controlsEl?.classList.add("filters-open");
+  document.getElementById("window-filters")?.scrollIntoView({ block: "nearest" });
+});
 document.getElementById("sports-picker-close")?.addEventListener("click", closeSportsPicker);
 sportsPickerModalEl?.addEventListener("click", (e) => {
   if (e.target === sportsPickerModalEl) closeSportsPicker();
@@ -482,6 +510,23 @@ sportsCatalogEl?.addEventListener("click", (e) => {
   safeRender();
   closeSportsPicker();
 });
+document.getElementById("room-state-filters")?.addEventListener("click", (e) => {
+  const button = e.target.closest("[data-room-filter]");
+  if (!button) return;
+  state.roomFilter = button.dataset.roomFilter;
+  setActive(button, "#room-state-filters");
+  document.querySelectorAll("#room-state-filters button").forEach((item) => {
+    item.setAttribute("aria-selected", String(item === button));
+  });
+  renderRoomSurfaces(liveState.fixtures.length ? liveState.fixtures : fixtures, liveState.liveGames, new Date());
+});
+document.getElementById("btn-global-search")?.addEventListener("click", openGlobalSearch);
+document.getElementById("search-close")?.addEventListener("click", closeGlobalSearch);
+searchOverlayEl?.addEventListener("click", (e) => {
+  if (e.target === searchOverlayEl) closeGlobalSearch();
+});
+globalSearchInputEl?.addEventListener("input", renderGlobalSearch);
+globalSearchResultsEl?.addEventListener("click", handleSearchResult);
 document.addEventListener("gs:recent-rooms-changed", () => updateCommunityPulse(
   liveState.fixtures.length ? liveState.fixtures : fixtures,
   liveState.liveGames
@@ -561,6 +606,13 @@ function render() {
   renderTeamFocus(scheduleSource);
   renderFavoriteLiveShelf(liveState.liveGames, upcoming);
   updateCommunityPulse(scheduleSource, liveState.liveGames, now);
+  renderLiveStrip(liveState.liveGames);
+  renderHomeNextGames(upcoming);
+  renderHomeRecentResults(liveState.results);
+  renderRoomSurfaces(scheduleSource, liveState.liveGames, now);
+  renderFollowingSurface(scheduleSource, liveState.liveGames);
+  renderProfileSurface();
+  syncFilterChips();
 
   if (state.mode === "live") {
     const live = filterLiveGames(liveState.liveGames);
@@ -689,23 +741,20 @@ function renderFavoriteLiveShelf(liveGames, upcomingGames) {
     Number(teamMatches(b, favoriteTeam)) - Number(teamMatches(a, favoriteTeam)) ||
     a.date - b.date;
   const preferredLive = liveGames.filter(isPreferred).sort(prioritySort);
-  const showingLive = preferredLive.length > 0;
-  const relevant = showingLive
-    ? preferredLive.slice(0, 4)
-    : upcomingGames.filter(isPreferred).sort(prioritySort).slice(0, 4);
+  const relevant = preferredLive.slice(0, 4);
 
-  favoriteLiveEl.classList.toggle("has-live", showingLive);
-  favoriteLiveKickerEl.textContent = showingLive ? "Live for you" : "For you";
-  favoriteLiveTitleEl.textContent = showingLive ? "Your sports are live now" : "Your next games";
-  favoriteLiveUpdatedEl.textContent = showingLive
-    ? (liveState.updatedAt ? `Shared live feed · ${formatTime(liveState.updatedAt)}` : "Shared live feed")
-    : "Based on your favourite sports";
+  favoriteLiveEl.classList.toggle("has-live", relevant.length > 0);
+  favoriteLiveKickerEl.textContent = "Live now";
+  favoriteLiveTitleEl.textContent = relevant.length ? "Live now for you" : "No games live right now";
+  favoriteLiveUpdatedEl.textContent = relevant.length
+    ? (liveState.updatedAt ? `Updated ${formatTime(liveState.updatedAt)}` : "Shared live feed")
+    : "Rooms opening soon";
 
   if (!relevant.length) {
     favoriteLiveListEl.innerHTML = `
       <div class="favorite-live-empty">
-        <strong>Your personalised fixture list will appear here.</strong>
-        <span>Choose favourite sports and a team in Settings.</span>
+        <strong>The next room is not far away.</strong>
+        <span>See joinable rooms below, or check Your next games.</span>
       </div>
     `;
     return;
@@ -713,12 +762,12 @@ function renderFavoriteLiveShelf(liveGames, upcomingGames) {
 
   favoriteLiveListEl.innerHTML = relevant.map((game) => {
     const favoriteMatch = favoriteTeam && teamMatches(game, favoriteTeam);
-    const status = showingLive ? liveStatusText(game) : `${formatDay(game.date)} · ${formatTime(game.date)}`;
-    const centre = showingLive ? `${scoreText(game, "home")}–${scoreText(game, "away")}` : "vs";
+    const status = liveStatusText(game);
+    const centre = `${scoreText(game, "home")}–${scoreText(game, "away")}`;
     return `
-    <button type="button" class="favorite-live-card ${showingLive ? "is-live" : "is-upcoming"}"
+    <button type="button" class="favorite-live-card is-live"
             data-for-you-league="${escapeAttr(game.league)}"
-            data-for-you-mode="${showingLive ? "live" : "fixtures"}">
+            data-for-you-mode="live">
       <span class="favorite-live-meta">
         <span class="league-pill" style="--league-color:${leagues[game.league]?.color || "#61717f"}">${game.league === "FIFA World Cup" ? "World Cup" : game.league}</span>
         <span>${favoriteMatch ? "Your team · " : ""}${escapeHtml(status)}</span>
@@ -728,10 +777,186 @@ function renderFavoriteLiveShelf(liveGames, upcomingGames) {
         <strong>${centre}</strong>
         <span>${teamIconHtml(game.away, game.league, "favorite-live-logo")}${escapeHtml(game.away)}</span>
       </span>
-      <span class="favorite-live-action">${showingLive ? "Open live view" : `Starts ${escapeHtml(timeUntil(game.date))}`}</span>
+      <span class="favorite-live-action">Open live view</span>
     </button>
   `;
   }).join("");
+}
+
+function renderLiveStrip(liveGames) {
+  if (!liveStripListEl) return;
+  if (!liveGames.length) {
+    liveStripListEl.innerHTML = `<span>No games live right now. Rooms are opening soon.</span>`;
+    return;
+  }
+  liveStripListEl.innerHTML = liveGames.slice(0, 5).map((game) => `
+    <button type="button" class="live-strip-game" data-open-room-id="${escapeAttr(matchKey(game))}">
+      <span>${escapeHtml(game.league === "FIFA World Cup" ? "World Cup" : game.league)}</span>
+      <strong>${escapeHtml(game.home)} ${scoreText(game, "home")}–${scoreText(game, "away")} ${escapeHtml(game.away)}</strong>
+      <small>${escapeHtml(liveStatusText(game))}</small>
+    </button>
+  `).join("");
+}
+
+function renderHomeNextGames(upcomingGames) {
+  if (!homeNextListEl) return;
+  const prefs = preferredCompetitionSet();
+  const favoriteTeam = window.gs?.auth?.profile?.favorite_team || "";
+  const relevant = upcomingGames
+    .filter((game) => !prefs || prefs.has(game.league))
+    .sort((a, b) => Number(teamMatches(b, favoriteTeam)) - Number(teamMatches(a, favoriteTeam)) || a.date - b.date)
+    .slice(0, 4);
+  if (!relevant.length) {
+    homeNextListEl.innerHTML = `<div class="empty-state">No upcoming games found for your sports.</div>`;
+    return;
+  }
+  homeNextListEl.innerHTML = relevant.map(homeFixtureTemplate).join("");
+}
+
+function renderHomeRecentResults(results) {
+  if (!homeResultListEl) return;
+  const prefs = preferredCompetitionSet();
+  const relevant = results
+    .filter((game) => !prefs || prefs.has(game.league))
+    .sort((a, b) => b.date - a.date)
+    .slice(0, 4);
+  homeResultListEl.innerHTML = relevant.length
+    ? relevant.map((game) => `
+      <article class="home-result-card">
+        <div><span class="league-pill">${escapeHtml(game.league === "FIFA World Cup" ? "World Cup" : game.league)}</span><small>Final</small></div>
+        <p><span>${teamIconHtml(game.home, game.league, "home-result-logo")}${escapeHtml(game.home)}</span><strong>${scoreText(game, "home")}</strong></p>
+        <p><span>${teamIconHtml(game.away, game.league, "home-result-logo")}${escapeHtml(game.away)}</span><strong>${scoreText(game, "away")}</strong></p>
+        ${chatButtonTemplate(game, chatWindowFor(game))}
+      </article>
+    `).join("")
+    : `<div class="empty-state">${liveState.loading ? "Loading recent results…" : "No recent results found."}</div>`;
+}
+
+function homeFixtureTemplate(game) {
+  const room = chatWindowFor(game);
+  return `
+    <article class="home-fixture-card">
+      <div class="home-fixture-meta">
+        <span class="league-pill">${escapeHtml(game.league === "FIFA World Cup" ? "World Cup" : game.league)}</span>
+        <span>${escapeHtml(game.round || "")}</span>
+      </div>
+      <div class="home-fixture-teams">
+        <span>${teamIconHtml(game.home, game.league, "home-fixture-logo")}<strong>${escapeHtml(game.home)}</strong></span>
+        <small>vs</small>
+        <span>${teamIconHtml(game.away, game.league, "home-fixture-logo")}<strong>${escapeHtml(game.away)}</strong></span>
+      </div>
+      <div class="home-fixture-time">
+        <strong>${formatTime(game.date)}</strong>
+        <span>${formatDay(game.date)} · ${escapeHtml(displayTimeZoneObj().label)}</span>
+      </div>
+      <div class="home-fixture-footer">
+        <span class="room-state-badge is-${room.phase}">${escapeHtml(roomStateLabel(room.phase))}</span>
+        ${chatButtonTemplate(game, room)}
+      </div>
+    </article>
+  `;
+}
+
+function renderRoomSurfaces(scheduleSource, liveGames, now = new Date()) {
+  const liveKeys = new Set(liveGames.map(matchKey));
+  const candidates = [
+    ...liveGames,
+    ...scheduleSource.filter((game) => !liveKeys.has(matchKey(game))),
+    ...liveState.results.slice(0, 20),
+  ].filter((game) => !game.isPlaceholder);
+  const seen = new Set();
+  const rooms = candidates
+    .filter((game) => {
+      const key = matchKey(game);
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
+    .map((game) => ({ game, room: chatWindowFor(game, now) }))
+    .filter(({ room }) => room.phase !== "closed")
+    .sort((a, b) => roomSortOrder(a.room.phase) - roomSortOrder(b.room.phase) || a.game.date - b.game.date)
+    .slice(0, 30);
+
+  const filtered = state.roomFilter === "all"
+    ? rooms
+    : rooms.filter(({ room }) => normalizeRoomFilter(room.phase) === state.roomFilter);
+
+  if (roomDirectoryListEl) {
+    roomDirectoryListEl.innerHTML = filtered.length
+      ? filtered.map(({ game, room }) => roomCardTemplate(game, room)).join("")
+      : `<div class="empty-state">No ${state.roomFilter === "all" ? "" : `${state.roomFilter} `}rooms are available right now.</div>`;
+  }
+
+  const joinable = rooms.filter(({ room }) => !room.readOnly).slice(0, 3);
+  if (homeRoomListEl) {
+    homeRoomListEl.innerHTML = joinable.length
+      ? joinable.map(({ game, room }) => roomCardTemplate(game, room, true)).join("")
+      : `<div class="empty-state">No rooms are open yet. Pre-game rooms open before kickoff.</div>`;
+  }
+  if (socialRoomListEl) {
+    const recent = recentRoomList();
+    const railRooms = joinable.slice(0, 3);
+    socialRoomListEl.innerHTML = railRooms.length
+      ? railRooms.map(({ game, room }) => socialRoomTemplate(game, room)).join("")
+      : recent.length
+        ? recent.slice(0, 3).map(recentRoomTemplate).join("")
+        : `<p class="rail-empty">Open a match room and it will stay handy here.</p>`;
+  }
+}
+
+function roomCardTemplate(game, room, compact = false) {
+  const status = game.isLive ? liveStatusText(game) : `${formatDay(game.date)} · ${formatTime(game.date)}`;
+  return `
+    <article class="room-card ${compact ? "is-compact" : ""}">
+      <div class="room-card-top">
+        <span class="room-state-badge is-${room.phase}">${escapeHtml(roomStateLabel(room.phase))}</span>
+        <span>${escapeHtml(game.league === "FIFA World Cup" ? "World Cup" : game.league)}</span>
+      </div>
+      <h3>${escapeHtml(game.home)} <span>v</span> ${escapeHtml(game.away)}</h3>
+      <div class="room-card-teams">
+        ${teamIconHtml(game.home, game.league, "room-card-logo")}
+        <strong>${game.isLive ? `${scoreText(game, "home")}–${scoreText(game, "away")}` : "vs"}</strong>
+        ${teamIconHtml(game.away, game.league, "room-card-logo")}
+      </div>
+      <p>${escapeHtml(status)}</p>
+      <div class="room-card-footer">
+        <span>${room.phase === "archive" ? "Read-only match archive" : room.phase === "post" ? "Final reactions" : "The room is open"}</span>
+        ${chatButtonTemplate(game, room)}
+      </div>
+    </article>
+  `;
+}
+
+function socialRoomTemplate(game, room) {
+  return `
+    <button type="button" class="social-room-item" data-open-room-id="${escapeAttr(matchKey(game))}">
+      <span class="room-state-badge is-${room.phase}">${escapeHtml(roomStateLabel(room.phase))}</span>
+      <strong>${escapeHtml(game.home)} v ${escapeHtml(game.away)}</strong>
+      <small>${game.isLive ? escapeHtml(liveStatusText(game)) : escapeHtml(formatTime(game.date))}</small>
+    </button>
+  `;
+}
+
+function recentRoomTemplate(room) {
+  return `<button type="button" class="social-room-item" data-recent-room-id="${escapeAttr(room.id)}"><span class="room-state-badge is-archive">Recent</span><strong>${escapeHtml(room.title || `${room.home} v ${room.away}`)}</strong><small>${escapeHtml(room.statusLabel || "Match room")}</small></button>`;
+}
+
+function roomStateLabel(phase) {
+  return {
+    pre: "Pre-game",
+    lineup: "Pre-game",
+    live: "Live",
+    post: "Post-game",
+    archive: "Archived",
+  }[phase] || "Opens 60m before";
+}
+
+function normalizeRoomFilter(phase) {
+  return phase === "lineup" ? "pre" : phase;
+}
+
+function roomSortOrder(phase) {
+  return { live: 0, lineup: 1, pre: 2, post: 3, archive: 4 }[phase] ?? 9;
 }
 
 function updateCommunityPulse(scheduleSource, liveGames, now = new Date()) {
@@ -751,12 +976,172 @@ function selectMode(mode) {
   state.mode = mode;
   state.window = "next";
   setActive(document.querySelector(`#mode-filters button[data-mode="${mode}"]`), "#mode-filters");
-  setActive(document.querySelector('#window-filters button[data-window="next"]'), "#window-filters");
-  document.querySelectorAll("[data-mobile-mode]").forEach((button) => {
-    button.classList.toggle("active", button.dataset.mobileMode === mode);
+  document.querySelectorAll("#mode-filters button").forEach((button) => {
+    button.setAttribute("aria-selected", String(button.dataset.mode === mode));
   });
+  setActive(document.querySelector('#window-filters button[data-window="next"]'), "#window-filters");
   updateModeControls();
   safeRender();
+}
+
+function selectAppView(view, scoreMode = "") {
+  if (!["home", "rooms", "scores", "following", "profile"].includes(view)) return;
+  state.appView = view;
+  document.querySelectorAll("[data-app-view-panel]").forEach((panel) => {
+    panel.classList.toggle("active", panel.dataset.appViewPanel === view);
+  });
+  document.querySelectorAll("[data-app-view]").forEach((button) => {
+    button.classList.toggle("active", button.dataset.appView === view);
+  });
+  if (view === "scores" && scoreMode) selectMode(scoreMode);
+  if (view === "profile") renderProfileSurface();
+  closeMobileFilters();
+  closeGlobalSearch();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function syncFilterChips() {
+  const sportChip = document.getElementById("chip-sport-filter");
+  const teamChip = document.getElementById("chip-team-filter");
+  const windowChip = document.getElementById("chip-window-filter");
+  if (sportChip) sportChip.firstChild.textContent = `${state.competition === "all" ? "My Sports" : state.competition} `;
+  if (teamChip) teamChip.firstChild.textContent = `${state.selectedTeam === "all" ? "All Teams" : state.selectedTeam} `;
+  if (windowChip) windowChip.firstChild.textContent = `${({ next: "Next", weekend: "Weekend", 7: "7 days", 21: "3 weeks" })[state.window] || "Next"} `;
+}
+
+function renderFollowingSurface(scheduleSource, liveGames) {
+  if (!followingContentEl) return;
+  const profile = window.gs?.auth?.profile;
+  if (!window.gs?.auth?.session) {
+    followingContentEl.innerHTML = guestActionTemplate("Sign in to follow teams and competitions.");
+    return;
+  }
+  const prefs = Array.isArray(profile?.preferred_competitions) ? profile.preferred_competitions : [];
+  const favorite = profile?.favorite_team || "";
+  const relevantLive = liveGames.filter((game) => prefs.includes(game.league) || teamMatches(game, favorite));
+  const next = scheduleSource
+    .filter((game) => game.date > new Date() && (prefs.includes(game.league) || teamMatches(game, favorite)))
+    .slice(0, 4);
+  followingContentEl.innerHTML = `
+    <section class="following-block">
+      <div class="section-heading compact"><div><p class="section-kicker">Favourite team</p><h3>${favorite ? escapeHtml(favorite) : "No team selected"}</h3></div><button type="button" class="text-action" data-open-settings>Manage</button></div>
+      ${favorite ? `<div class="followed-team">${teamIconHtml(favorite, teamLeague(favorite), "followed-team-logo")}<strong>${escapeHtml(favorite)}</strong></div>` : `<p class="empty-state">Choose a favourite team in Profile.</p>`}
+    </section>
+    <section class="following-block">
+      <p class="section-kicker">Competitions</p>
+      <div class="follow-chip-list">${prefs.length ? prefs.map((item) => `<span>${escapeHtml(item === "FIFA World Cup" ? "World Cup" : item)}</span>`).join("") : "<span>No competitions selected</span>"}</div>
+    </section>
+    <section class="following-block">
+      <div class="section-heading compact"><div><p class="section-kicker">For you</p><h3>${relevantLive.length ? "Live now" : "Coming up"}</h3></div></div>
+      <div class="home-next-list">${(relevantLive.length ? relevantLive : next).map(homeFixtureTemplate).join("") || `<p class="empty-state">No matching games found.</p>`}</div>
+    </section>
+  `;
+}
+
+function renderProfileSurface() {
+  if (!profileContentEl) return;
+  const auth = window.gs?.auth;
+  if (!auth?.session) {
+    profileContentEl.innerHTML = guestActionTemplate("Sign in to create your fan identity, follow teams and post in rooms.");
+    return;
+  }
+  const profile = auth.profile || {};
+  const username = profile.username || auth.session.user?.email?.split("@")[0] || "Fan";
+  const prefs = Array.isArray(profile.preferred_competitions) ? profile.preferred_competitions : [];
+  profileContentEl.innerHTML = `
+    <section class="profile-hero">
+      <div class="profile-avatar-large">${escapeHtml(username.slice(0, 2).toUpperCase())}</div>
+      <div><p class="section-kicker">Fan identity</p><h3>@${escapeHtml(username)}</h3><span>${escapeHtml(auth.session.user?.email || "")}</span></div>
+      <button type="button" class="btn-primary btn-small" data-open-settings>Edit profile</button>
+    </section>
+    <div class="profile-grid">
+      <section><span>Favourite team</span><strong>${escapeHtml(profile.favorite_team || "Not selected")}</strong></section>
+      <section><span>Time zone</span><strong>${escapeHtml(displayTimeZoneObj().description)}</strong></section>
+      <section><span>Following</span><strong>${prefs.length} competition${prefs.length === 1 ? "" : "s"}</strong></section>
+      <section><span>Match rooms</span><strong>${recentRoomList().length} recently opened</strong></section>
+    </div>
+    <section class="profile-connections">
+      <div><p class="section-kicker">Connected accounts</p><h3>Share only when you choose</h3><p>X and Facebook connections will be handled securely on the server. Cross-posting will remain off by default.</p></div>
+      <button type="button" disabled>Connect accounts</button>
+    </section>
+  `;
+}
+
+function guestActionTemplate(message) {
+  return `
+    <section class="guest-action">
+      <img src="brand/roarline-icon.svg" alt="">
+      <h3>${escapeHtml(message)}</h3>
+      <p>Guests can browse every score and read match rooms.</p>
+      <div><button type="button" class="btn-primary" data-auth-action="signin">Sign in</button><button type="button" data-auth-action="signup">Create account</button></div>
+    </section>
+  `;
+}
+
+function openGlobalSearch() {
+  searchOverlayEl?.classList.remove("is-hidden");
+  document.body.classList.add("modal-open");
+  window.setTimeout(() => globalSearchInputEl?.focus(), 0);
+}
+
+function closeGlobalSearch() {
+  searchOverlayEl?.classList.add("is-hidden");
+  if (!document.querySelector(".modal-overlay:not(.is-hidden), .settings-panel.is-open")) {
+    document.body.classList.remove("modal-open");
+  }
+}
+
+function renderGlobalSearch() {
+  if (!globalSearchResultsEl) return;
+  const query = globalSearchInputEl?.value.trim().toLowerCase() || "";
+  if (query.length < 2) {
+    globalSearchResultsEl.innerHTML = `<p class="empty-state">Type at least two characters.</p>`;
+    return;
+  }
+  const competitions = Object.keys(leagues)
+    .filter((league) => league.toLowerCase().includes(query))
+    .slice(0, 5)
+    .map((league) => ({ type: "competition", label: league, sub: "Competition", value: league }));
+  const teamNames = [...new Set(Object.keys(teams))]
+    .filter((team) => team.toLowerCase().includes(query))
+    .slice(0, 8)
+    .map((team) => ({ type: "team", label: team, sub: teamLeague(team) || "Team", value: team }));
+  const games = [...liveState.liveGames, ...liveState.fixtures, ...liveState.results]
+    .filter((game) => `${game.home} ${game.away} ${game.league}`.toLowerCase().includes(query))
+    .slice(0, 8)
+    .map((game) => ({ type: "room", label: `${game.home} v ${game.away}`, sub: `${roomStateLabel(chatWindowFor(game).phase)} · ${game.league}`, value: matchKey(game) }));
+  const profile = window.gs?.auth?.profile;
+  const users = profile?.username?.toLowerCase().includes(query)
+    ? [{ type: "user", label: `@${profile.username}`, sub: "Your profile", value: profile.username }]
+    : [];
+  const results = [...competitions, ...teamNames, ...games, ...users].slice(0, 15);
+  globalSearchResultsEl.innerHTML = results.length
+    ? results.map((result) => `<button type="button" class="search-result" data-search-type="${result.type}" data-search-value="${escapeAttr(result.value)}"><span>${escapeHtml(result.label)}</span><small>${escapeHtml(result.sub)}</small></button>`).join("")
+    : `<p class="empty-state">No teams, competitions or rooms found. User search will arrive with the community directory.</p>`;
+}
+
+function handleSearchResult(e) {
+  const button = e.target.closest("[data-search-type]");
+  if (!button) return;
+  if (button.dataset.searchType === "competition") {
+    state.competition = button.dataset.searchValue;
+    ensureCompetitionQuickButton(state.competition);
+    populateTeamSelect();
+    selectAppView("scores");
+    safeRender();
+  } else if (button.dataset.searchType === "team") {
+    state.selectedTeam = button.dataset.searchValue;
+    state.competition = teamLeague(state.selectedTeam) || "all";
+    ensureCompetitionQuickButton(state.competition);
+    populateTeamSelect();
+    selectAppView("scores");
+    safeRender();
+  } else if (button.dataset.searchType === "room") {
+    openRoomById(button.dataset.searchValue);
+  } else if (button.dataset.searchType === "user") {
+    selectAppView("profile");
+  }
+  closeGlobalSearch();
 }
 
 function closeMobileFilters() {
@@ -1067,7 +1452,7 @@ function chatButtonTemplate(item, chat) {
     ? `data-home-score="${item.homeScore}" data-away-score="${item.awayScore}"`
     : "";
   return `
-    <button type="button" class="btn-chat-trigger" data-game-id="${escapeAttr(matchKey(item))}"
+    <button type="button" class="btn-chat-trigger" onclick="window.gs.openChatFromButton(this)" data-game-id="${escapeAttr(matchKey(item))}"
             data-legacy-game-id="${escapeAttr(legacyMatchKey(item))}"
             data-league="${escapeAttr(item.league)}"
             data-home="${escapeAttr(item.home)}" data-away="${escapeAttr(item.away)}"
@@ -1088,43 +1473,46 @@ function chatWindowFor(item, now = new Date()) {
 
   const kickoff = new Date(item.date).getTime();
   const diff = kickoff - now.getTime();
-  const preOpen = 24 * 60 * 60 * 1000;
+  const preOpen = 60 * 60 * 1000;
   const liveOpen = 30 * 60 * 1000;
-  const postClose = 8 * 60 * 60 * 1000;
+  const postClose = 90 * 60 * 1000;
 
-  if (diff > preOpen) return { phase: "closed", label: "Room opens 24h before kickoff", button: "", readOnly: true };
-  if (diff > liveOpen) return { phase: "pre", label: "Pre-game room", button: "Pre-game", readOnly: false };
-  if (diff > 0) return { phase: "lineup", label: "Lineup room", button: "Lineups", readOnly: false };
-  if (now.getTime() - kickoff <= postClose) return { phase: "post", label: "Post-game room", button: "React", readOnly: false };
-  return { phase: "archive", label: "Saved match archive", button: "Archive", readOnly: true };
+  if (diff > preOpen) return { phase: "closed", label: "Pre-game opens 60m before kickoff", button: "", readOnly: true };
+  if (diff > liveOpen) return { phase: "pre", label: "Pre-game", button: "Open room", readOnly: false };
+  if (diff > 0) return { phase: "lineup", label: "Pre-game", button: "Join room", readOnly: false };
+  if (now.getTime() - kickoff <= postClose) return { phase: "post", label: "Post-game", button: "Join room", readOnly: false };
+  return { phase: "archive", label: "Archived", button: "View room", readOnly: true };
 }
 
-// Wire chat buttons (event delegation on fixture list)
-fixturesEl.addEventListener("click", (e) => {
-  const btn = e.target.closest(".btn-chat-trigger");
-  if (!btn) return;
-  const cfg = window.GRANDSTAND_CONFIG;
-  if (!cfg.CHAT_ENABLED) return;
+function openRoomById(id) {
+  const allGames = [...liveState.liveGames, ...liveState.fixtures, ...liveState.results, ...fixtures];
+  const game = allGames.find((item) => matchKey(item) === id || legacyMatchKey(item) === id);
+  if (!game) return;
+  const room = chatWindowFor(game);
+  if (room.phase === "closed") return;
+  requestRoomOpen({
+    id: matchKey(game),
+    aliases: [legacyMatchKey(game)].filter(Boolean),
+    league: game.league,
+    leagueColor: leagues[game.league]?.color,
+    title: `${game.home} vs ${game.away}`,
+    home: game.home,
+    away: game.away,
+    homeScore: game.homeScore,
+    awayScore: game.awayScore,
+    phase: room.phase,
+    statusLabel: room.label,
+    readOnly: room.readOnly,
+    homeGoals: game.homeGoals,
+    homeBehinds: game.homeBehinds,
+    awayGoals: game.awayGoals,
+    awayBehinds: game.awayBehinds,
+  });
+}
 
-  window.gs?.openChat?.({
-    id: btn.dataset.gameId,
-    aliases: [btn.dataset.legacyGameId].filter(Boolean),
-    league: btn.dataset.league,
-    leagueColor: leagues[btn.dataset.league]?.color,
-    title: `${btn.dataset.home} vs ${btn.dataset.away}`,
-	    home: btn.dataset.home,
-	    away: btn.dataset.away,
-	    homeScore: nullableNumber(btn.dataset.homeScore),
-	    awayScore: nullableNumber(btn.dataset.awayScore),
-      phase: btn.dataset.chatPhase || "live",
-      statusLabel: btn.dataset.chatLabel || "Live room",
-      readOnly: btn.dataset.chatReadonly === "true",
-	    homeGoals: nullableNumber(btn.dataset.homeGoals),
-	    homeBehinds: nullableNumber(btn.dataset.homeBehinds),
-	    awayGoals: nullableNumber(btn.dataset.awayGoals),
-	    awayBehinds: nullableNumber(btn.dataset.awayBehinds),
-	  });
-	});
+function requestRoomOpen(gameInfo) {
+  document.dispatchEvent(new CustomEvent("gs:open-room", { detail: gameInfo }));
+}
 
 function stripTeamTemplate(name, league) {
   const [code] = teams[name] || [name.slice(0, 3).toUpperCase()];

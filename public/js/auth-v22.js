@@ -480,6 +480,12 @@
     window.setTimeout(() => authEmailInput?.focus(), 0);
   }
 
+  window.gs.openAuth = (mode = "signin") => {
+    authMode = mode === "signup" ? "signup" : "signin";
+    showAuthModal();
+    if (mode === "signup" || mode === "signin") showAuthEmailView();
+  };
+
   function setAuthStatus(message, isError = false) {
     if (!authStatus) return;
     authStatus.textContent = message || "";

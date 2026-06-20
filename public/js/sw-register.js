@@ -10,7 +10,7 @@
 (function () {
   "use strict";
 
-  const BUILD = "roarline-brand-v23";
+  const BUILD = "roarline-fan-rooms-v32";
   const CLEANUP_KEY = `gs.cacheCleanup.${BUILD}`;
 
   window.gs = window.gs || {};

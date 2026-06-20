@@ -9,5 +9,9 @@
     logoIcon: "brand/roarline-icon.svg",
     logoMono: "brand/roarline-logo-mono.svg",
     appIcon: "brand/roarline-app-icon.svg",
+    alternates: [
+      "brand/roarline-logo-b-stadium-speech.svg",
+      "brand/roarline-logo-c-ticker-wave.svg",
+    ],
   });
 })();

@@ -30,12 +30,42 @@
   const chatSigninPrompt = document.getElementById("chat-signin-prompt");
   const chatFormEl = document.getElementById("chat-form");
   const chatSigninBtn = document.getElementById("chat-signin-btn");
+  const chatCreateAccountBtn = document.getElementById("chat-create-account-btn");
+  const chatKeepBrowsingBtn = document.getElementById("chat-keep-browsing-btn");
   const chatStatus = document.getElementById("chat-status");
   const chatSendBtn = chatForm?.querySelector('button[type="submit"]');
 
   // ── Public API ────────────────────────────────────────────────
   window.gs.openChat = openChat;
   window.gs.closeChat = closeChat;
+  window.gs.openChatFromButton = (button) => {
+    if (!button) return;
+    openChat({
+      id: button.dataset.gameId,
+      aliases: [button.dataset.legacyGameId].filter(Boolean),
+      league: button.dataset.league,
+      title: `${button.dataset.home} vs ${button.dataset.away}`,
+      home: button.dataset.home,
+      away: button.dataset.away,
+      homeScore: nullableNumber(button.dataset.homeScore),
+      awayScore: nullableNumber(button.dataset.awayScore),
+      phase: button.dataset.chatPhase || "live",
+      statusLabel: button.dataset.chatLabel || "Match room",
+      readOnly: button.dataset.chatReadonly === "true",
+      homeGoals: nullableNumber(button.dataset.homeGoals),
+      homeBehinds: nullableNumber(button.dataset.homeBehinds),
+      awayGoals: nullableNumber(button.dataset.awayGoals),
+      awayBehinds: nullableNumber(button.dataset.awayBehinds),
+    });
+  };
+  document.addEventListener("gs:open-room", (event) => {
+    if (event.detail) openChat(event.detail);
+  });
+  document.addEventListener("click", (event) => {
+    const button = event.target.closest(".btn-chat-trigger");
+    if (!button) return;
+    if (!button.hasAttribute("onclick")) window.gs.openChatFromButton(button);
+  });
 
   /**
    * Open the chat panel for a specific live game.
@@ -141,27 +171,33 @@
       chatSigninPrompt?.classList.remove("is-hidden");
       chatSigninPrompt.querySelector("p").textContent = "This room is read-only.";
       chatSigninBtn?.classList.add("is-hidden");
+      chatCreateAccountBtn?.classList.add("is-hidden");
       chatFormEl?.classList.add("is-hidden");
       return;
     }
     if (isAuthenticated) {
       chatSigninPrompt?.classList.add("is-hidden");
       chatSigninBtn?.classList.remove("is-hidden");
+      chatCreateAccountBtn?.classList.remove("is-hidden");
       chatFormEl?.classList.remove("is-hidden");
     } else {
       chatSigninPrompt?.classList.remove("is-hidden");
       chatSigninPrompt.querySelector("p").textContent = "Sign in to join the conversation";
       chatSigninBtn?.classList.remove("is-hidden");
+      chatCreateAccountBtn?.classList.remove("is-hidden");
       chatFormEl?.classList.add("is-hidden");
     }
   }
 
   chatSigninBtn?.addEventListener("click", () => {
     closeChat();
-    // Trigger auth modal
-    document.getElementById("auth-modal")?.classList.remove("is-hidden");
-    document.body.classList.add("modal-open");
+    window.gs?.openAuth?.("signin");
   });
+  chatCreateAccountBtn?.addEventListener("click", () => {
+    closeChat();
+    window.gs?.openAuth?.("signup");
+  });
+  chatKeepBrowsingBtn?.addEventListener("click", closeChat);
 
   // ── Messages ──────────────────────────────────────────────────
   async function loadMessages(gameIds) {
@@ -434,11 +470,11 @@
   function setRoomBadge(phase = "") {
     if (!chatRoomBadge) return;
     const states = {
-      pre: { label: "Upcoming", className: "is-upcoming" },
-      lineup: { label: "Starting soon", className: "is-upcoming" },
+      pre: { label: "Pre-game", className: "is-upcoming" },
+      lineup: { label: "Pre-game", className: "is-upcoming" },
       live: { label: "Live", className: "is-live" },
       post: { label: "Post-game", className: "is-post" },
-      archive: { label: "Archive", className: "is-archive" },
+      archive: { label: "Archived", className: "is-archive" },
     };
     const state = states[phase] || { label: "Match room", className: "is-upcoming" };
     chatRoomBadge.textContent = state.label;
@@ -555,6 +591,12 @@
     const behinds = item[`${side}Behinds`];
     if (item.league === "AFL" && Number.isFinite(goals) && Number.isFinite(behinds)) return `${goals}-${behinds} ${score}`;
     return String(score);
+  }
+
+  function nullableNumber(value) {
+    if (value === "" || value === null || value === undefined) return null;
+    const number = Number(value);
+    return Number.isFinite(number) ? number : null;
   }
 
 })();

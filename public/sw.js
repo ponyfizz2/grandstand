@@ -10,7 +10,7 @@
  * Cache names are versioned — bump CACHE_VERSION on each deploy.
  */
 
-const CACHE_VERSION    = 'roarline-v23';
+const CACHE_VERSION    = 'roarline-v32';
 const SHELL_CACHE      = `${CACHE_VERSION}-shell`;
 const DATA_CACHE       = `${CACHE_VERSION}-data`;
 const ESPN_CACHE_TTL   = 5 * 60 * 1000; // 5 minutes
@@ -31,6 +31,8 @@ const SHELL_ASSETS = [
   '/brand/roarline-icon.svg',
   '/brand/roarline-logo-mono.svg',
   '/brand/roarline-app-icon.svg',
+  '/brand/roarline-logo-b-stadium-speech.svg',
+  '/brand/roarline-logo-c-ticker-wave.svg',
   '/assets/icons/icon-192.png',
   '/assets/icons/icon-512.png',
   // Supabase CDN (cached by the browser but listed for completeness)

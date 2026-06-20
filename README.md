@@ -11,6 +11,8 @@ The active product name and reusable asset paths live in
 - Compact mark: `public/brand/roarline-icon.svg`
 - Monochrome logo: `public/brand/roarline-logo-mono.svg`
 - App icon: `public/brand/roarline-app-icon.svg`
+- Alternate B: `public/brand/roarline-logo-b-stadium-speech.svg`
+- Alternate C: `public/brand/roarline-logo-c-ticker-wave.svg`
 
 To replace the logo later, keep these filenames or update the paths in
 `public/brand/brand.js` and the corresponding `<img>` references in

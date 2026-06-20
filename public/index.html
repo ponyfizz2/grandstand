@@ -11,12 +11,12 @@
     <meta name="apple-mobile-web-app-title" content="Roarline">
     <title>Roarline — Live scores and match rooms</title>
     <link rel="icon" type="image/svg+xml" href="brand/roarline-app-icon.svg">
-    <link rel="manifest" href="manifest.json?v=23">
+    <link rel="manifest" href="manifest.json?v=32">
     <link rel="apple-touch-icon" href="brand/roarline-app-icon.svg">
-    <link rel="stylesheet" href="css/styles.css?v=23">
+    <link rel="stylesheet" href="css/styles.css?v=32">
   </head>
   <body data-theme="dark">
-    <div class="build-badge" id="build-badge">ROARLINE v23 · signal r</div>
+    <div class="build-badge" id="build-badge">ROARLINE v32 · fan rooms</div>
 
     <!-- Auth Modal -->
     <div id="auth-modal" class="modal-overlay is-hidden" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
@@ -100,7 +100,7 @@
           </div>
           <!-- Step 3: Identity and display -->
           <div id="onboarding-step-3" class="is-hidden">
-            <h2>Set your match-day identity <span class="build-inline">v23</span></h2>
+            <h2>Set your match-day identity <span class="build-inline">v32</span></h2>
             <p class="modal-subtitle">Choose your timezone, favourite team and chat icon.</p>
             <div class="field-group">
               <label class="field-label" for="onboarding-tz-select">Time zone</label>
@@ -274,14 +274,26 @@
       </div>
       <div class="chat-input-area" id="chat-input-area">
         <div class="chat-signin-prompt is-hidden" id="chat-signin-prompt">
-          <p>Sign in to join the conversation</p>
-          <button type="button" class="btn-primary btn-small" id="chat-signin-btn">Sign in</button>
+          <p>Sign in to join the room.</p>
+          <div class="chat-signin-actions">
+            <button type="button" class="btn-primary btn-small" id="chat-signin-btn">Sign in</button>
+            <button type="button" class="btn-secondary-full btn-small" id="chat-create-account-btn">Create account</button>
+            <button type="button" class="btn-text-small" id="chat-keep-browsing-btn">Keep browsing</button>
+          </div>
         </div>
         <form class="chat-form" id="chat-form">
-          <input type="text" id="chat-input" class="chat-input" placeholder="Say something..." maxlength="280" autocomplete="off">
-          <button type="submit" class="btn-send" aria-label="Send message">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-          </button>
+          <div class="chat-compose-row">
+            <input type="text" id="chat-input" class="chat-input" placeholder="Join the conversation..." maxlength="280" autocomplete="off">
+            <button type="submit" class="btn-send" aria-label="Post to Roarline">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            </button>
+          </div>
+          <div class="crosspost-options" aria-label="Cross-posting options">
+            <span>Post to Roarline</span>
+            <label title="Connect X in Profile to enable"><input type="checkbox" disabled> Also post to X</label>
+            <label title="Connect Facebook in Profile to enable"><input type="checkbox" disabled> Also post to Facebook</label>
+            <button type="button" class="btn-text-small" data-app-view-link="profile">Connect accounts</button>
+          </div>
         </form>
         <p class="chat-status" id="chat-status" aria-live="polite"></p>
       </div>
@@ -329,179 +341,235 @@
             <select id="settings-tz-select" class="settings-select" aria-label="Time zone"></select>
           </div>
         </section>
+        <section class="settings-section">
+          <h3 class="settings-section-title">Connected accounts</h3>
+          <div class="connected-account-row"><span>X</span><button type="button" disabled>Connect account</button></div>
+          <div class="connected-account-row"><span>Facebook</span><button type="button" disabled>Connect account</button></div>
+          <p class="settings-note">Cross-posting is always opt-in. Secure account connections are coming later.</p>
+        </section>
+        <section class="settings-section">
+          <h3 class="settings-section-title">Notifications</h3>
+          <div class="connected-account-row"><span>Favourite team kickoff</span><button type="button" disabled>Coming soon</button></div>
+          <div class="connected-account-row"><span>Room opening alerts</span><button type="button" disabled>Coming soon</button></div>
+        </section>
       </div>
     </aside>
     <div class="settings-backdrop is-hidden" id="settings-backdrop"></div>
 
     <!-- App Header -->
-    <header class="app-header">
+    <header class="app-header app-topbar">
       <div class="header-brand">
-        <p class="eyebrow" id="time-zone-eyebrow">Kickoff times in New Zealand time</p>
         <h1 class="brand-lockup">
           <img class="brand-logo-horizontal" src="brand/roarline-logo-horizontal.svg" alt="Roarline">
           <img class="brand-logo-compact" src="brand/roarline-icon.svg" alt="" aria-hidden="true">
         </h1>
+        <p class="eyebrow" id="time-zone-eyebrow">Kickoff times in New Zealand time</p>
       </div>
+      <nav class="desktop-primary-nav" aria-label="Primary navigation">
+        <button type="button" class="active" data-app-view="home">Home</button>
+        <button type="button" data-app-view="rooms">Rooms</button>
+        <button type="button" data-app-view="scores">Scores</button>
+        <button type="button" data-app-view="following">Following</button>
+        <button type="button" data-app-view="profile">Profile</button>
+      </nav>
       <div class="header-tools">
-        <div class="clock-panel">
+        <div class="clock-panel desktop-clock">
           <span class="clock-label" id="clock-tz-label">Now NZT</span>
           <strong id="current-time">--:--</strong>
           <span id="current-date">Loading</span>
         </div>
-        <button type="button" class="btn-icon btn-settings" id="btn-settings" aria-label="Settings">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <button type="button" class="btn-icon" id="btn-global-search" aria-label="Search Roarline">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
         </button>
-        <div id="auth-header-area" class="auth-header-area">
-          <!-- Populated by auth.js: sign-in button or user avatar -->
-        </div>
+        <div id="auth-header-area" class="auth-header-area"></div>
       </div>
     </header>
 
-    <main>
-      <section class="favorite-live" id="favorite-live" aria-label="Games selected for you">
-        <div class="favorite-live-heading">
-          <div>
-            <p class="section-kicker" id="favorite-live-kicker">For you</p>
-            <h2 id="favorite-live-title">Your next games</h2>
-          </div>
-          <span id="favorite-live-updated"></span>
-        </div>
-        <div class="favorite-live-list" id="favorite-live-list"></div>
-      </section>
+    <section class="live-now-strip" aria-label="Live now">
+      <div class="live-strip-label"><span class="live-dot"></span> Live now</div>
+      <div class="live-strip-list" id="live-strip-list"><span>Checking live games…</span></div>
+      <button type="button" data-app-view="scores" data-score-mode="live">View all</button>
+    </section>
 
-      <!-- Controls Bar -->
-      <section class="controls" aria-label="Fixture controls">
-        <div class="mobile-filter-heading">
-          <strong>Filters</strong>
-          <button type="button" class="btn-icon" id="btn-mobile-filters-close" aria-label="Close filters">×</button>
-        </div>
-        <div class="control-group control-view">
-          <span class="control-label">View</span>
-          <div class="segmented" id="mode-filters">
-            <button type="button" data-mode="live">Live</button>
-            <button type="button" class="active" data-mode="fixtures">Upcoming</button>
-            <button type="button" data-mode="results">Results</button>
-            <button type="button" data-mode="tables">Tables</button>
+    <main class="app-shell">
+      <aside class="discovery-rail" aria-label="Sports filters">
+        <div class="rail-heading"><span class="section-kicker">Discover</span><strong>Find your game</strong></div>
+        <section class="controls" aria-label="Fixture controls">
+          <div class="mobile-filter-heading">
+            <strong>Filters</strong>
+            <button type="button" class="btn-icon" id="btn-mobile-filters-close" aria-label="Close filters">×</button>
           </div>
-        </div>
-        <div class="control-group control-filter">
-          <span class="control-label">Competition</span>
-          <div class="segmented" id="competition-filters">
-            <button type="button" class="active" data-filter="all">My Sports</button>
-            <button type="button" data-filter="NRL">NRL</button>
-            <button type="button" data-filter="AFL">AFL</button>
-            <button type="button" data-filter="Super Rugby">Rugby</button>
-            <button type="button" data-filter="FIFA World Cup">World Cup</button>
+          <div class="control-group control-filter">
+            <span class="control-label">Sports</span>
+            <div class="segmented" id="competition-filters">
+              <button type="button" class="active" data-filter="all">My Sports</button>
+              <button type="button" data-filter="NRL">NRL</button>
+              <button type="button" data-filter="AFL">AFL</button>
+              <button type="button" data-filter="Super Rugby">Rugby</button>
+              <button type="button" data-filter="FIFA World Cup">World Cup</button>
+            </div>
+            <button type="button" class="btn-secondary-full btn-browse-sports" id="btn-browse-sports">Browse all sports</button>
           </div>
-          <button type="button" class="btn-secondary-full btn-browse-sports" id="btn-browse-sports">Browse sports</button>
-        </div>
-        <div class="control-group control-filter">
-          <label class="control-label" for="team-select">Team</label>
-          <select id="team-select">
-            <option value="all">All teams</option>
-          </select>
-        </div>
-        <div class="control-group control-filter" id="range-control">
-          <span class="control-label" id="range-label">Window</span>
-          <div class="segmented" id="window-filters">
-            <button type="button" class="active" data-window="next">Next</button>
-            <button type="button" data-window="weekend">Weekend</button>
-            <button type="button" data-window="7">7 days</button>
-            <button type="button" data-window="21">3 weeks</button>
+          <div class="control-group control-filter">
+            <label class="control-label" for="team-select">Team</label>
+            <select id="team-select"><option value="all">All teams</option></select>
           </div>
-        </div>
-      </section>
+          <div class="control-group control-filter" id="range-control">
+            <span class="control-label" id="range-label">Window</span>
+            <div class="segmented" id="window-filters">
+              <button type="button" class="active" data-window="next">Next</button>
+              <button type="button" data-window="weekend">Weekend</button>
+              <button type="button" data-window="7">7 days</button>
+              <button type="button" data-window="21">3 weeks</button>
+            </div>
+          </div>
+        </section>
+        <section class="summary-strip secondary-counts" aria-label="Summary counts">
+          <div><span id="count-all">0</span><p>visible</p></div>
+          <div><span id="count-nrl">0</span><p>NRL</p></div>
+          <div><span id="count-afl">0</span><p>AFL</p></div>
+          <div><span id="count-super">0</span><p>Rugby</p></div>
+          <div><span id="count-wc">0</span><p>World Cup</p></div>
+        </section>
+      </aside>
 
-      <!-- Summary Strip -->
-      <section class="summary-strip" aria-label="Summary counts">
-        <div>
-          <span id="count-all">0</span>
-          <p>visible</p>
-        </div>
-        <div>
-          <span id="count-nrl">0</span>
-          <p>NRL</p>
-        </div>
-        <div>
-          <span id="count-afl">0</span>
-          <p>AFL</p>
-        </div>
-        <div>
-          <span id="count-super">0</span>
-          <p>Rugby</p>
-        </div>
-        <div>
-          <span id="count-wc">0</span>
-          <p>World Cup</p>
-        </div>
-      </section>
+      <div class="app-view-stack">
+        <section class="app-view active" id="view-home" data-app-view-panel="home">
+          <div class="page-intro">
+            <div><p class="section-kicker">Home</p><h2>The game is on. Join the crowd.</h2><p>Live scores, match rooms and fan conversation in one place.</p></div>
+          </div>
+          <section class="favorite-live" id="favorite-live" aria-label="Live now for you">
+            <div class="favorite-live-heading">
+              <div><p class="section-kicker" id="favorite-live-kicker">Live now</p><h2 id="favorite-live-title">Live now for you</h2></div>
+              <span id="favorite-live-updated"></span>
+            </div>
+            <div class="favorite-live-list" id="favorite-live-list"></div>
+          </section>
+          <section class="home-section" aria-labelledby="joinable-title">
+            <div class="section-heading compact">
+              <div><p class="section-kicker">Room open</p><h2 id="joinable-title">Joinable rooms</h2></div>
+              <button type="button" class="text-action" data-app-view="rooms">See all rooms</button>
+            </div>
+            <div class="room-card-list" id="home-room-list"></div>
+          </section>
+          <section class="home-section" aria-labelledby="next-games-title">
+            <div class="section-heading compact">
+              <div><p class="section-kicker">Up next</p><h2 id="next-games-title">Your next games</h2></div>
+              <button type="button" class="text-action" data-app-view="scores" data-score-mode="fixtures">Full schedule</button>
+            </div>
+            <div class="home-next-list" id="home-next-list"></div>
+          </section>
+          <section class="home-section" aria-labelledby="recent-results-title">
+            <div class="section-heading compact">
+              <div><p class="section-kicker">Full time</p><h2 id="recent-results-title">Recent results</h2></div>
+              <button type="button" class="text-action" data-app-view="scores" data-score-mode="results">All results</button>
+            </div>
+            <div class="home-result-list" id="home-result-list"></div>
+          </section>
+        </section>
 
-      <section class="community-pulse" id="community-pulse" aria-label="Match rooms">
-        <div>
-          <p class="section-kicker">Match rooms</p>
-          <h2>Watch the game with the room open</h2>
-        </div>
-        <div class="community-pulse-grid">
-          <div>
-            <strong id="room-count-open">0</strong>
-            <span>rooms open soon</span>
+        <section class="app-view" id="view-rooms" data-app-view-panel="rooms">
+          <div class="page-intro"><div><p class="section-kicker">Match rooms</p><h2>There is a room for every game</h2><p>Join before kickoff, stay through the action, and revisit the conversation after full time.</p></div></div>
+          <div class="room-state-filters" id="room-state-filters" role="tablist" aria-label="Room state">
+            <button type="button" class="active" role="tab" aria-selected="true" data-room-filter="all">All</button>
+            <button type="button" role="tab" aria-selected="false" data-room-filter="live">Live</button>
+            <button type="button" role="tab" aria-selected="false" data-room-filter="pre">Pre-game</button>
+            <button type="button" role="tab" aria-selected="false" data-room-filter="post">Post-game</button>
+            <button type="button" role="tab" aria-selected="false" data-room-filter="archive">Archived</button>
           </div>
-          <div>
-            <strong id="room-count-live">0</strong>
-            <span>live rooms</span>
+          <div class="room-directory" id="room-directory-list"></div>
+          <div class="room-counts" id="community-pulse" aria-label="Room counts">
+            <span><strong id="room-count-live">0</strong> live</span>
+            <span><strong id="room-count-open">0</strong> open soon</span>
+            <span><strong id="room-count-recent">0</strong> recently joined</span>
           </div>
-          <div>
-            <strong id="room-count-recent">0</strong>
-            <span>recent rooms saved here</span>
-          </div>
-        </div>
-      </section>
+        </section>
 
-      <!-- Main Fixture Area -->
-      <section class="fixture-shell" aria-labelledby="fixtures-title">
-        <div class="section-heading">
-          <div>
-            <p class="section-kicker" id="section-kicker-main">Schedule</p>
-            <h2 id="fixtures-title">Upcoming kickoffs</h2>
+        <section class="app-view" id="view-scores" data-app-view-panel="scores">
+          <div class="page-intro scores-intro">
+            <div><p class="section-kicker">Scores</p><h2>Every game, one clean view</h2></div>
+            <button type="button" class="filter-trigger" id="btn-mobile-filters">Filters <span aria-hidden="true">⌄</span></button>
           </div>
-          <p id="range-note">Showing the next run of confirmed fixtures.</p>
-        </div>
-        <section id="team-focus" class="team-focus is-hidden" aria-label="Selected team"></section>
-        <div id="fixtures" class="fixture-list"></div>
-      </section>
+          <div class="score-tabs segmented" id="mode-filters" role="tablist" aria-label="Score view">
+            <button type="button" role="tab" aria-selected="false" data-mode="live">Live</button>
+            <button type="button" class="active" role="tab" aria-selected="true" data-mode="fixtures">Upcoming</button>
+            <button type="button" role="tab" aria-selected="false" data-mode="results">Results</button>
+            <button type="button" role="tab" aria-selected="false" data-mode="tables">Tables</button>
+          </div>
+          <div class="compact-filter-row" aria-label="Current filters">
+            <button type="button" id="chip-sport-filter">My Sports <span aria-hidden="true">⌄</span></button>
+            <button type="button" id="chip-team-filter">All Teams <span aria-hidden="true">⌄</span></button>
+            <button type="button" id="chip-window-filter">Next <span aria-hidden="true">⌄</span></button>
+          </div>
+          <section class="fixture-shell" aria-labelledby="fixtures-title">
+            <div class="section-heading">
+              <div><p class="section-kicker" id="section-kicker-main">Schedule</p><h2 id="fixtures-title">Upcoming kickoffs</h2></div>
+              <p id="range-note">Showing the next run of confirmed fixtures.</p>
+            </div>
+            <section id="team-focus" class="team-focus is-hidden" aria-label="Selected team"></section>
+            <div id="fixtures" class="fixture-list"></div>
+          </section>
+        </section>
 
-      <!-- Source Band -->
-      <section class="source-band" aria-label="Data sources">
-        <p>Live data from ESPN. Fixture seed checked against official league pages. Some AFL and Super Rugby fixtures move as broadcast windows are confirmed.</p>
-        <div>
-          <a href="https://www.nrl.com/draw/" target="_blank" rel="noreferrer">NRL draw</a>
-          <a href="https://www.afl.com.au/fixture" target="_blank" rel="noreferrer">AFL fixture</a>
-          <a href="https://www.superrugby.co.nz/pacific/fixtures" target="_blank" rel="noreferrer">Super Rugby</a>
-          <a href="admin.html" id="admin-link" class="admin-link is-hidden">Admin</a>
-        </div>
-      </section>
+        <section class="app-view" id="view-following" data-app-view-panel="following">
+          <div class="page-intro"><div><p class="section-kicker">Following</p><h2>Your teams and competitions</h2><p>Live games and rooms from the sports you care about most.</p></div></div>
+          <div id="following-content" class="following-content"></div>
+        </section>
+
+        <section class="app-view" id="view-profile" data-app-view-panel="profile">
+          <div class="page-intro"><div><p class="section-kicker">Profile</p><h2>Your Roarline identity</h2><p>Manage how you appear in match rooms and how Roarline works for you.</p></div></div>
+          <div id="profile-content" class="profile-content"></div>
+        </section>
+      </div>
+
+      <aside class="social-rail" aria-label="Open and recent rooms">
+        <div class="rail-heading"><span class="section-kicker">Room activity</span><strong>Join the conversation</strong></div>
+        <div id="social-room-list" class="social-room-list"></div>
+        <button type="button" class="btn-secondary-full" data-app-view="rooms">Browse all rooms</button>
+      </aside>
     </main>
 
+    <footer class="source-band" aria-label="Data sources">
+      <p>Live data from ESPN. Fixture seed checked against official league pages. Some fixtures move as broadcast windows are confirmed.</p>
+      <div>
+        <a href="https://www.nrl.com/draw/" target="_blank" rel="noreferrer">NRL draw</a>
+        <a href="https://www.afl.com.au/fixture" target="_blank" rel="noreferrer">AFL fixture</a>
+        <a href="https://www.superrugby.co.nz/pacific/fixtures" target="_blank" rel="noreferrer">Super Rugby</a>
+        <a href="admin.html" id="admin-link" class="admin-link is-hidden">Admin</a>
+      </div>
+    </footer>
+
     <nav class="mobile-bottom-nav" aria-label="Primary app navigation">
-      <button type="button" data-mobile-mode="live"><span aria-hidden="true">●</span><small>Live</small></button>
-      <button type="button" class="active" data-mobile-mode="fixtures"><span aria-hidden="true">⌁</span><small>Upcoming</small></button>
-      <button type="button" data-mobile-mode="results"><span aria-hidden="true">✓</span><small>Results</small></button>
-      <button type="button" data-mobile-mode="tables"><span aria-hidden="true">▤</span><small>Tables</small></button>
-      <button type="button" id="btn-mobile-filters"><span aria-hidden="true">≡</span><small>Filters</small></button>
+      <button type="button" class="active" data-app-view="home"><span aria-hidden="true">⌂</span><small>Home</small></button>
+      <button type="button" data-app-view="rooms"><span aria-hidden="true">◌</span><small>Rooms</small></button>
+      <button type="button" data-app-view="scores"><span aria-hidden="true">▤</span><small>Scores</small></button>
+      <button type="button" data-app-view="following"><span aria-hidden="true">☆</span><small>Following</small></button>
+      <button type="button" data-app-view="profile"><span aria-hidden="true">●</span><small>Profile</small></button>
     </nav>
+
+    <div class="search-overlay is-hidden" id="search-overlay" role="dialog" aria-modal="true" aria-labelledby="search-title">
+      <div class="search-panel">
+        <div class="search-header">
+          <div><p class="section-kicker">Search</p><h2 id="search-title">Find teams, competitions and rooms</h2></div>
+          <button type="button" class="btn-icon" id="search-close" aria-label="Close search">×</button>
+        </div>
+        <input type="search" class="field-input search-input" id="global-search-input" placeholder="Try Warriors, NBA or a match room" autocomplete="off">
+        <div class="search-results" id="global-search-results"><p class="empty-state">Start typing to search Roarline.</p></div>
+      </div>
+    </div>
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <script>
       window.GRANDSTAND_EXPECTED_AUTH_BUILD = "github-pages-auth-v22";
     </script>
-    <script src="brand/brand.js?v=23"></script>
-    <script src="js/config.js?v=23"></script>
-    <script src="js/identity.js?v=23"></script>
-    <script src="js/auth-v22.js?v=23"></script>
-    <script src="js/chat.js?v=23"></script>
-    <script src="js/script.js?v=23"></script>
-    <script src="js/sw-register.js?v=23"></script>
+    <script src="brand/brand.js?v=32"></script>
+    <script src="js/config.js?v=32"></script>
+    <script src="js/identity.js?v=32"></script>
+    <script src="js/auth-v22.js?v=32"></script>
+    <script src="js/chat.js?v=32"></script>
+    <script src="js/script.js?v=32"></script>
+    <script src="js/sw-register.js?v=32"></script>
     <script>
       (() => {
         const expected = window.GRANDSTAND_EXPECTED_AUTH_BUILD;

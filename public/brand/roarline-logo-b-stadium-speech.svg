@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 104" role="img" aria-labelledby="title desc">
+  <title id="title">Roarline Stadium Speech logo concept</title>
+  <desc id="desc">An abstract stadium bowl that also forms a conversation bubble.</desc>
+  <defs>
+    <linearGradient id="b" x1="8" y1="15" x2="94" y2="88" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#5DA8FF"/>
+      <stop offset="1" stop-color="#44D7A8"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(4 6)" fill="none" stroke="url(#b)" stroke-linecap="round">
+    <path d="M10 32c18-18 55-18 74 0" stroke-width="9"/>
+    <path d="M18 46c15-12 43-12 58 0" stroke-width="8"/>
+    <path d="M25 59c11-7 32-7 43 0" stroke-width="7"/>
+    <path d="M13 26v43c0 10 8 18 18 18h20l17 10-4-10h10c10 0 18-8 18-18V26" stroke-width="6"/>
+    <circle cx="82" cy="17" r="5" fill="#F05A5A" stroke="none"/>
+  </g>
+  <text x="116" y="69" fill="#F3F7FA" font-family="Inter, Arial, sans-serif" font-size="56" font-weight="900" font-style="italic" letter-spacing="1">ROARLINE</text>
+</svg>
