@@ -1,7 +1,7 @@
 /**
  * BUILD: github-pages-auth-v22
  *
- * Grandstand — Auth Module
+ * Roarline — Auth Module
  * Handles Google OAuth via Supabase, user profiles, onboarding,
  * and settings panel population.
  */
@@ -800,7 +800,7 @@
     };
     if (actual >= expected) return;
 
-    console.error("[Grandstand Auth] Chat icon picker rendered incompletely", window.gs.authDiagnostics);
+    console.error("[Roarline Auth] Chat icon picker rendered incompletely", window.gs.authDiagnostics);
     const warning = document.createElement("p");
     warning.className = "settings-note auth-diagnostic";
     warning.textContent = `Icon picker did not fully load (${actual}/${expected}) on build ${window.gs.authBuild}.`;

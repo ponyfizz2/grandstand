@@ -1,5 +1,5 @@
 /**
- * Grandstand — Configuration
+ * Roarline — Configuration
  * ─────────────────────────────────────────────────────────────
  * Replace SUPABASE_URL and SUPABASE_ANON_KEY with your project
  * values from https://supabase.com/dashboard → Project Settings → API
@@ -9,13 +9,19 @@
  * in both Google Cloud Console AND Supabase Auth → Providers → Google.
  */
 
+const brand = window.ROARLINE_BRAND || {
+  name: "Roarline",
+  tagline: "Live scores. Match rooms. Fan voices.",
+};
+
 window.GRANDSTAND_CONFIG = {
   // ── Supabase ────────────────────────────────────────────────
   SUPABASE_URL:      'https://nxqxboepctqiowtgjkgn.supabase.co',
   SUPABASE_ANON_KEY: "sb_publishable_mw4HqBhIZrcAT3uXxg8fbQ_q2QvOA0y",
 
   // ── App ─────────────────────────────────────────────────────
-  APP_NAME: "Grandstand",
+  APP_NAME: brand.name,
+  BRAND: brand,
   APP_URL: "https://ponyfizz2.github.io/grandstand/",
   LIVE_SCORES_URL: "https://nxqxboepctqiowtgjkgn.supabase.co/functions/v1/live-scores",
 

@@ -1,11 +1,17 @@
 /* ============================================================
-   GRANDSTAND — Styles
+   ROARLINE — Styles
    Mobile-first, CSS custom properties, dark/light theme
    ============================================================ */
 
 /* ── Tokens ──────────────────────────────────────────────── */
 :root {
   color-scheme: light;
+  --brand-bg: #07131C;
+  --brand-surface: #101D28;
+  --brand-primary: #5DA8FF;
+  --brand-accent: #44D7A8;
+  --brand-live: #F05A5A;
+  --brand-text: #F3F7FA;
   --ink: #17202a;
   --ink-2: #334155;
   --muted: #61717f;
@@ -31,23 +37,30 @@
   --chat-own-ink: #ffffff;
   --radius: 8px;
   --transition: 160ms ease;
+  --bg-primary: var(--paper);
+  --bg-card: var(--panel);
+  --bg-hover: var(--panel-raised);
+  --border: var(--line);
+  --text-primary: var(--ink);
+  --text-secondary: var(--muted);
+  --accent: var(--brand-accent);
 }
 
 body[data-theme="dark"] {
   color-scheme: dark;
-  --ink: #edf4f2;
+  --ink: var(--brand-text);
   --ink-2: #b8ccd8;
-  --muted: #9caeb8;
-  --line: #2b3d49;
-  --paper: #0c1117;
-  --panel: #121a22;
-  --panel-tint: rgba(18, 26, 34, 0.92);
-  --panel-raised: rgba(22, 31, 40, 0.96);
-  --control-surface: #17212b;
-  --date-surface: rgba(12, 17, 23, 0.94);
-  --navy: #85b7ff;
-  --green: #4bc092;
-  --red: #ff6b65;
+  --muted: #a7b4c0;
+  --line: #263746;
+  --paper: var(--brand-bg);
+  --panel: var(--brand-surface);
+  --panel-tint: rgba(16, 29, 40, 0.92);
+  --panel-raised: rgba(22, 38, 53, 0.96);
+  --control-surface: #162635;
+  --date-surface: rgba(7, 19, 28, 0.94);
+  --navy: var(--brand-primary);
+  --green: var(--brand-accent);
+  --red: var(--brand-live);
   --gold: #e8b550;
   --blue: #67a7e8;
   --soft-green: rgba(75, 192, 146, 0.12);
@@ -77,8 +90,8 @@ body {
 
 body[data-theme="dark"] {
   background:
-    linear-gradient(90deg, rgba(75, 192, 146, 0.05) 1px, transparent 1px) 0 0 / 80px 80px,
-    linear-gradient(180deg, rgba(32, 96, 130, 0.22), transparent 420px),
+    linear-gradient(90deg, rgba(68, 215, 168, 0.035) 1px, transparent 1px) 0 0 / 80px 80px,
+    linear-gradient(180deg, rgba(93, 168, 255, 0.13), transparent 420px),
     var(--paper);
 }
 
@@ -121,6 +134,30 @@ body[data-theme="dark"] .gs-wordmark-large {
   font-weight: 950;
   font-size: 1.1rem;
   letter-spacing: 0;
+}
+
+.brand-logo-modal {
+  display: block;
+  width: 152px;
+  height: auto;
+}
+
+.brand-lockup {
+  display: block;
+  width: clamp(190px, 27vw, 300px);
+  margin: 4px 0 0;
+  line-height: 0;
+}
+
+.brand-logo-horizontal,
+.brand-logo-compact {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.brand-logo-compact {
+  display: none;
 }
 
 .eyebrow, .section-kicker, .control-label, .clock-label, .settings-section-title {
@@ -2105,6 +2142,33 @@ body.onboarding-complete #onboarding-modal {
   .team-focus-header, .team-focus-grid { grid-template-columns: 1fr; }
   .team-focus-stats { justify-content: flex-start; }
   .section-heading p:last-child { text-align: left; max-width: 100%; }
+}
+
+@media (max-width: 699px) {
+  .header-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .header-brand .eyebrow {
+    order: 2;
+    max-width: 190px;
+  }
+
+  .brand-lockup {
+    flex: 0 0 48px;
+    width: 48px;
+    margin: 0;
+  }
+
+  .brand-logo-horizontal {
+    display: none;
+  }
+
+  .brand-logo-compact {
+    display: block;
+  }
 }
 
 /* ── Responsive — mobile ─────────────────────────────────── */

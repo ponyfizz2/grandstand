@@ -1,7 +1,7 @@
 {
   "name": "grandstand",
   "version": "1.0.0",
-  "description": "Grandstand — live sports scores, standings and game-day social chat.",
+  "description": "Roarline — live sports scores, match rooms and fan conversation.",
   "private": true,
   "type": "module",
   "engines": {

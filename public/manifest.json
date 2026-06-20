@@ -1,38 +1,26 @@
 {
-  "name": "Grandstand",
-  "short_name": "Grandstand",
-  "description": "Live sports scores, standings, and game-day social chat for NRL, AFL, Super Rugby, FIFA World Cup and more.",
+  "name": "Roarline",
+  "short_name": "Roarline",
+  "description": "Live scores, match rooms and fan conversation in one place.",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#0f1117",
-  "theme_color": "#6366f1",
+  "background_color": "#07131C",
+  "theme_color": "#07131C",
   "orientation": "portrait-primary",
   "scope": "./",
   "lang": "en-AU",
   "categories": ["sports", "news", "social"],
   "icons": [
     {
-      "src": "assets/icons/icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
+      "src": "brand/roarline-app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
       "purpose": "any"
     },
     {
-      "src": "assets/icons/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "assets/icons/icon-maskable-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "assets/icons/icon-maskable-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
+      "src": "brand/roarline-app-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
       "purpose": "maskable"
     }
   ],
@@ -51,7 +39,7 @@
       "short_name": "Live",
       "description": "Jump to live games",
       "url": "./?tab=live",
-      "icons": [{ "src": "assets/icons/icon-96.png", "sizes": "96x96" }]
+      "icons": [{ "src": "brand/roarline-icon.svg", "sizes": "any", "type": "image/svg+xml" }]
     }
   ],
   "prefer_related_applications": false

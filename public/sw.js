@@ -1,5 +1,5 @@
 /**
- * Grandstand — Service Worker (sw.js)
+ * Roarline — Service Worker (sw.js)
  *
  * Strategy:
  *  - App shell (HTML, CSS, JS): Network-first with cache fallback
@@ -10,7 +10,7 @@
  * Cache names are versioned — bump CACHE_VERSION on each deploy.
  */
 
-const CACHE_VERSION    = 'gs-v22';
+const CACHE_VERSION    = 'roarline-v23';
 const SHELL_CACHE      = `${CACHE_VERSION}-shell`;
 const DATA_CACHE       = `${CACHE_VERSION}-data`;
 const ESPN_CACHE_TTL   = 5 * 60 * 1000; // 5 minutes
@@ -26,6 +26,11 @@ const SHELL_ASSETS = [
   '/js/auth-v22.js',
   '/js/chat.js',
   '/manifest.json',
+  '/brand/brand.js',
+  '/brand/roarline-logo-horizontal.svg',
+  '/brand/roarline-icon.svg',
+  '/brand/roarline-logo-mono.svg',
+  '/brand/roarline-app-icon.svg',
   '/assets/icons/icon-192.png',
   '/assets/icons/icon-512.png',
   // Supabase CDN (cached by the browser but listed for completeness)

@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════
-   Grandstand — Admin Panel Logic
+   Roarline — Admin Panel Logic
    admin.js
    Requires: config.js (window.GRANDSTAND_CONFIG), Supabase CDN
 ═══════════════════════════════════════════════ */

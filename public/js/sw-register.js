@@ -1,29 +1,29 @@
 /**
- * Grandstand cache cleanup.
+ * Roarline cache cleanup.
  *
  * During active development, stale service-worker app-shell caches are more
  * harmful than useful. This file intentionally unregisters existing service
- * workers and clears Grandstand caches so deployed drafts always use fresh
+ * workers and clears Roarline caches so deployed builds always use fresh
  * HTML, CSS, and JS.
  */
 
 (function () {
   "use strict";
 
-  const BUILD = "github-pages-v22";
+  const BUILD = "roarline-brand-v23";
   const CLEANUP_KEY = `gs.cacheCleanup.${BUILD}`;
 
   window.gs = window.gs || {};
   window.gs.cacheBuild = BUILD;
 
   if (!/^https?:$/.test(window.location.protocol)) {
-    console.info("[Grandstand Cache] No service worker on", window.location.protocol);
+    console.info("[Roarline Cache] No service worker on", window.location.protocol);
     return;
   }
 
   window.addEventListener("load", () => {
     cleanupServiceWorkerCaches().catch(error => {
-      console.warn("[Grandstand Cache] Cleanup failed:", error);
+      console.warn("[Roarline Cache] Cleanup failed:", error);
     });
   });
 

@@ -1,6 +1,20 @@
-# Grandstand
+# Roarline
 
-Live sports scores, standings and game-day social chat.
+Live scores, match rooms and fan conversation in one place.
+
+## Brand assets
+
+The active product name and reusable asset paths live in
+`public/brand/brand.js`. The default mark is the Signal R.
+
+- Horizontal logo: `public/brand/roarline-logo-horizontal.svg`
+- Compact mark: `public/brand/roarline-icon.svg`
+- Monochrome logo: `public/brand/roarline-logo-mono.svg`
+- App icon: `public/brand/roarline-app-icon.svg`
+
+To replace the logo later, keep these filenames or update the paths in
+`public/brand/brand.js` and the corresponding `<img>` references in
+`public/index.html` and `public/admin.html`.
 
 ## Architecture
 
@@ -86,7 +100,7 @@ Commit and push to `main`:
 
 ```bash
 git add .
-git commit -m "Deploy Grandstand"
+git commit -m "Deploy Roarline"
 git push origin main
 ```
 

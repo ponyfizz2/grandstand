@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 520 104" role="img" aria-labelledby="title desc">
+  <title id="title">Roarline monochrome logo</title>
+  <desc id="desc">Single-colour Roarline horizontal logo.</desc>
+  <g fill="#F3F7FA">
+    <g transform="translate(4 4)">
+      <circle cx="26" cy="12" r="4"/>
+      <circle cx="39" cy="8" r="5"/>
+      <circle cx="52" cy="12" r="4"/>
+      <circle cx="77" cy="21" r="5"/>
+      <path d="M20 20h29c18 0 29 9 29 24 0 10-5 18-15 22l16 18H58L45 69h-8v15H20V64L9 85l28-15V55h11c8 0 13-4 13-11s-5-11-13-11H37v13H20V20Z"/>
+      <path d="M7 56h15l7-10 6 18 7-27 8 21 5-6h17v5H58l-10 12-6-16-7 26-8-22-2 4H7v-5Z"/>
+    </g>
+    <text x="108" y="68" font-family="Inter, Arial, sans-serif" font-size="56" font-weight="900" font-style="italic" letter-spacing="1">ROARLINE</text>
+  </g>
+</svg>

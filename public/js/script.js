@@ -1,5 +1,5 @@
 /**
- * Grandstand — Main App Script
+ * Roarline — Main App Script
  * Fixtures, results, tables, live scores, filtering, theme, timezone.
  * Refactored from Footy Watch with FIFA World Cup, dynamic competitions,
  * proper Intl timezone handling, and live chat integration.

@@ -3,25 +3,26 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#0c1117" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#07131C" media="(prefers-color-scheme: dark)">
     <meta name="theme-color" content="#f6f8fb" media="(prefers-color-scheme: light)">
-    <meta name="description" content="Grandstand — live scores, fixtures, tables and social commentary for NRL, AFL, Super Rugby and more.">
+    <meta name="description" content="Roarline — live scores, match rooms and fan conversation in one place.">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Grandstand">
-    <title>Grandstand</title>
-    <link rel="manifest" href="manifest.json?v=22">
-    <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
-    <link rel="stylesheet" href="css/styles.css?v=22">
+    <meta name="apple-mobile-web-app-title" content="Roarline">
+    <title>Roarline — Live scores and match rooms</title>
+    <link rel="icon" type="image/svg+xml" href="brand/roarline-app-icon.svg">
+    <link rel="manifest" href="manifest.json?v=23">
+    <link rel="apple-touch-icon" href="brand/roarline-app-icon.svg">
+    <link rel="stylesheet" href="css/styles.css?v=23">
   </head>
   <body data-theme="dark">
-    <div class="build-badge" id="build-badge">GITHUB v22 · simpler sign in</div>
+    <div class="build-badge" id="build-badge">ROARLINE v23 · signal r</div>
 
     <!-- Auth Modal -->
     <div id="auth-modal" class="modal-overlay is-hidden" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
       <div class="modal">
         <div class="modal-header">
-          <span class="gs-wordmark">Grandstand</span>
+          <img class="brand-logo-modal" src="brand/roarline-logo-horizontal.svg" alt="Roarline">
         </div>
         <div class="modal-body auth-modal-body" id="auth-modal-body">
           <div class="auth-view" id="auth-provider-view">
@@ -73,7 +74,7 @@
     <div id="onboarding-modal" class="modal-overlay is-hidden" role="dialog" aria-modal="true" aria-labelledby="onboarding-title">
       <div class="modal modal-wide">
 	        <div class="modal-header">
-	          <span class="gs-wordmark">Grandstand</span>
+	          <img class="brand-logo-modal" src="brand/roarline-logo-horizontal.svg" alt="Roarline">
 	          <span class="modal-step" id="onboarding-step-label">Step 1 of 3</span>
 	        </div>
         <div class="modal-body" id="onboarding-body">
@@ -99,7 +100,7 @@
           </div>
           <!-- Step 3: Identity and display -->
           <div id="onboarding-step-3" class="is-hidden">
-            <h2>Set your match-day identity <span class="build-inline">v22</span></h2>
+            <h2>Set your match-day identity <span class="build-inline">v23</span></h2>
             <p class="modal-subtitle">Choose your timezone, favourite team and chat icon.</p>
             <div class="field-group">
               <label class="field-label" for="onboarding-tz-select">Time zone</label>
@@ -222,7 +223,7 @@
     <div id="sports-picker-modal" class="modal-overlay is-hidden" role="dialog" aria-modal="true" aria-labelledby="sports-picker-title">
       <div class="modal modal-wide">
         <div class="modal-header">
-          <span class="gs-wordmark">Grandstand</span>
+          <img class="brand-logo-modal" src="brand/roarline-logo-horizontal.svg" alt="Roarline">
           <button type="button" class="btn-icon" id="sports-picker-close" aria-label="Close sports picker">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
@@ -336,7 +337,10 @@
     <header class="app-header">
       <div class="header-brand">
         <p class="eyebrow" id="time-zone-eyebrow">Kickoff times in New Zealand time</p>
-        <h1 class="gs-wordmark-large">Grandstand</h1>
+        <h1 class="brand-lockup">
+          <img class="brand-logo-horizontal" src="brand/roarline-logo-horizontal.svg" alt="Roarline">
+          <img class="brand-logo-compact" src="brand/roarline-icon.svg" alt="" aria-hidden="true">
+        </h1>
       </div>
       <div class="header-tools">
         <div class="clock-panel">
@@ -491,17 +495,18 @@
     <script>
       window.GRANDSTAND_EXPECTED_AUTH_BUILD = "github-pages-auth-v22";
     </script>
-    <script src="js/config.js?v=22"></script>
-    <script src="js/identity.js?v=22"></script>
-    <script src="js/auth-v22.js"></script>
-    <script src="js/chat.js?v=22"></script>
-    <script src="js/script.js?v=22"></script>
-    <script src="js/sw-register.js?v=22"></script>
+    <script src="brand/brand.js?v=23"></script>
+    <script src="js/config.js?v=23"></script>
+    <script src="js/identity.js?v=23"></script>
+    <script src="js/auth-v22.js?v=23"></script>
+    <script src="js/chat.js?v=23"></script>
+    <script src="js/script.js?v=23"></script>
+    <script src="js/sw-register.js?v=23"></script>
     <script>
       (() => {
         const expected = window.GRANDSTAND_EXPECTED_AUTH_BUILD;
         const showDiagnostic = (message) => {
-          console.error("[Grandstand Diagnostics]", message, {
+          console.error("[Roarline Diagnostics]", message, {
             expected,
             actual: window.gs?.authBuild || null,
             protocol: window.location.protocol,
@@ -522,11 +527,11 @@
             const actual = window.gs?.authBuild || "";
             const authScript = [...document.scripts].find(script => script.src.includes("auth-"))?.getAttribute("src") || "";
             if (!authScript.includes("auth-v22.js")) {
-              showDiagnostic(`Grandstand loaded the wrong auth script: ${authScript || "none"}.`);
+              showDiagnostic(`Roarline loaded the wrong auth script: ${authScript || "none"}.`);
               return;
             }
             if (actual !== expected) {
-              showDiagnostic(`Grandstand loaded stale app files. Expected ${expected}, got ${actual || "nothing"}.`);
+              showDiagnostic(`Roarline loaded stale app files. Expected ${expected}, got ${actual || "nothing"}.`);
               return;
             }
 
