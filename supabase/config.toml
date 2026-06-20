@@ -1,0 +1,4 @@
+project_id = "nxqxboepctqiowtgjkgn"
+
+[functions.live-scores]
+verify_jwt = false

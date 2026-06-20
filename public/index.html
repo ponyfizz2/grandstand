@@ -1,0 +1,524 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0c1117" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#f6f8fb" media="(prefers-color-scheme: light)">
+    <meta name="description" content="Grandstand — live scores, fixtures, tables and social commentary for NRL, AFL, Super Rugby and more.">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Grandstand">
+    <title>Grandstand</title>
+    <link rel="manifest" href="manifest.json?v=21">
+    <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+    <link rel="stylesheet" href="css/styles.css?v=21">
+  </head>
+  <body data-theme="dark">
+    <div class="build-badge" id="build-badge">GITHUB v21 · pages + supabase</div>
+
+    <!-- Auth Modal -->
+    <div id="auth-modal" class="modal-overlay is-hidden" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
+      <div class="modal">
+        <div class="modal-header">
+          <span class="gs-wordmark">Grandstand</span>
+        </div>
+        <div class="modal-body" id="auth-modal-body">
+          <h2 id="auth-modal-title">Welcome to Grandstand</h2>
+          <p class="modal-subtitle">Create your fan identity, sign in, or keep browsing as a guest.</p>
+          <div class="auth-choice-row" id="auth-mode-tabs" role="tablist" aria-label="Account action">
+            <button type="button" class="active" data-auth-mode="signup">Sign up</button>
+            <button type="button" data-auth-mode="signin">Sign in</button>
+          </div>
+          <button class="btn-google" id="btn-sign-in-google" type="button">
+            <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
+            Continue with Google
+          </button>
+          <div class="auth-divider"><span>or use email</span></div>
+          <div class="auth-email-form">
+            <label class="field-label" for="auth-email">Email</label>
+            <input type="email" id="auth-email" class="field-input" placeholder="you@example.com" autocomplete="email">
+            <label class="field-label" for="auth-password">Password</label>
+            <input type="password" id="auth-password" class="field-input" placeholder="Strong password" autocomplete="new-password">
+            <p class="auth-status" id="auth-status" aria-live="polite"></p>
+            <button class="btn-primary" id="btn-auth-email-submit" type="button">Create account</button>
+            <button class="btn-text-small is-hidden" id="btn-auth-forgot-password" type="button">Reset password</button>
+          </div>
+          <p class="auth-terms">By signing in you agree to our <a href="#" class="text-link">Terms</a> and <a href="#" class="text-link">Privacy Policy</a>.</p>
+          <button class="btn-secondary-full" id="btn-continue-guest" type="button">Continue as guest</button>
+          <p class="guest-note">Guests can view scores and fixtures only. Sign in to post, follow teams, save preferences or use notifications.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Onboarding Modal (shown after first sign-in) -->
+    <div id="onboarding-modal" class="modal-overlay is-hidden" role="dialog" aria-modal="true" aria-labelledby="onboarding-title">
+      <div class="modal modal-wide">
+	        <div class="modal-header">
+	          <span class="gs-wordmark">Grandstand</span>
+	          <span class="modal-step" id="onboarding-step-label">Step 1 of 3</span>
+	        </div>
+        <div class="modal-body" id="onboarding-body">
+          <!-- Step 1: Username -->
+          <div id="onboarding-step-1">
+            <h2 id="onboarding-title">Choose your username</h2>
+            <p class="modal-subtitle">This is how other fans will see you in live match chats.</p>
+            <div class="field-group">
+              <label class="field-label" for="username-input">Username</label>
+              <input type="text" id="username-input" class="field-input" placeholder="e.g. footy_fan_nz" maxlength="32" autocomplete="off" spellcheck="false">
+              <span class="field-hint" id="username-hint">Letters, numbers, underscores. 3–32 characters.</span>
+            </div>
+            <button class="btn-primary" id="btn-username-next" type="button" disabled>Next</button>
+          </div>
+          <!-- Step 2: Sports preferences -->
+          <div id="onboarding-step-2" class="is-hidden">
+            <h2>Pick your competitions</h2>
+            <p class="modal-subtitle">These will show by default — you can always change them later in Settings.</p>
+            <div class="pref-grid" id="pref-grid">
+              <!-- Populated by JS -->
+            </div>
+            <button class="btn-primary" id="btn-prefs-done" type="button">Next</button>
+          </div>
+          <!-- Step 3: Identity and display -->
+          <div id="onboarding-step-3" class="is-hidden">
+            <h2>Set your match-day identity <span class="build-inline">v21</span></h2>
+            <p class="modal-subtitle">Choose your timezone, favourite team and chat icon.</p>
+            <div class="field-group">
+              <label class="field-label" for="onboarding-tz-select">Time zone</label>
+              <select id="onboarding-tz-select"></select>
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="favorite-team-select">Favourite team</label>
+              <select id="favorite-team-select"></select>
+            </div>
+	            <div class="field-group">
+	              <span class="field-label">Chat icon</span>
+	              <div class="avatar-choice-grid" id="avatar-choice-grid" data-fallback-rendered="true">
+	                <button type="button" class="avatar-choice active" data-avatar-type="google">
+	                  <span class="identity-avatar">G</span>
+	                  <span>Google</span>
+	                </button>
+	                <button type="button" class="avatar-choice" data-avatar-type="team">
+	                  <span class="identity-avatar team">TEAM</span>
+	                  <span>Favourite team</span>
+	                </button>
+	                <button type="button" class="avatar-choice" data-avatar-type="sport:soccer">
+	                  <span class="identity-avatar sport-icon">⚽</span>
+	                  <span>Football</span>
+	                </button>
+	                <button type="button" class="avatar-choice" data-avatar-type="sport:rugby">
+	                  <span class="identity-avatar sport-icon">🏉</span>
+	                  <span>Rugby</span>
+	                </button>
+	                <button type="button" class="avatar-choice" data-avatar-type="sport:aussie-rules">
+	                  <span class="identity-avatar sport-icon">🏉</span>
+	                  <span>Aussie Rules</span>
+	                </button>
+	                <button type="button" class="avatar-choice" data-avatar-type="sport:basketball">
+	                  <span class="identity-avatar sport-icon">🏀</span>
+	                  <span>Basketball</span>
+	                </button>
+	                <button type="button" class="avatar-choice" data-avatar-type="sport:baseball">
+	                  <span class="identity-avatar sport-icon">⚾</span>
+	                  <span>Baseball</span>
+	                </button>
+	                <button type="button" class="avatar-choice" data-avatar-type="sport:tennis">
+	                  <span class="identity-avatar sport-icon">🎾</span>
+	                  <span>Tennis</span>
+	                </button>
+	                <button type="button" class="avatar-choice" data-avatar-type="sport:cricket">
+	                  <span class="identity-avatar sport-icon">🏏</span>
+	                  <span>Cricket</span>
+	                </button>
+	                <button type="button" class="avatar-choice" data-avatar-type="sport:hockey">
+	                  <span class="identity-avatar sport-icon">🏒</span>
+	                  <span>Hockey</span>
+	                </button>
+	                <button type="button" class="avatar-choice" data-avatar-type="sport:american-football">
+	                  <span class="identity-avatar sport-icon">🏈</span>
+	                  <span>Gridiron</span>
+	                </button>
+	                <button type="button" class="avatar-choice" data-avatar-type="sport:golf">
+	                  <span class="identity-avatar sport-icon">⛳</span>
+	                  <span>Golf</span>
+	                </button>
+	                <button type="button" class="avatar-choice" data-avatar-type="sport:racing">
+	                  <span class="identity-avatar sport-icon">🏁</span>
+	                  <span>Racing</span>
+	                </button>
+	              </div>
+	              <div class="avatar-choice-grid sport-fallback-grid" id="sport-icon-fallback-grid" aria-label="Sport icon choices">
+	                <button type="button" class="avatar-choice" data-avatar-type="sport:soccer">
+	                  <span class="identity-avatar sport-icon">⚽</span>
+	                  <span>Football</span>
+	                </button>
+	                <button type="button" class="avatar-choice" data-avatar-type="sport:rugby">
+	                  <span class="identity-avatar sport-icon">🏉</span>
+	                  <span>Rugby</span>
+	                </button>
+	                <button type="button" class="avatar-choice" data-avatar-type="sport:aussie-rules">
+	                  <span class="identity-avatar sport-icon">🏉</span>
+	                  <span>Aussie Rules</span>
+	                </button>
+	                <button type="button" class="avatar-choice" data-avatar-type="sport:basketball">
+	                  <span class="identity-avatar sport-icon">🏀</span>
+	                  <span>Basketball</span>
+	                </button>
+	                <button type="button" class="avatar-choice" data-avatar-type="sport:baseball">
+	                  <span class="identity-avatar sport-icon">⚾</span>
+	                  <span>Baseball</span>
+	                </button>
+	                <button type="button" class="avatar-choice" data-avatar-type="sport:tennis">
+	                  <span class="identity-avatar sport-icon">🎾</span>
+	                  <span>Tennis</span>
+	                </button>
+	                <button type="button" class="avatar-choice" data-avatar-type="sport:cricket">
+	                  <span class="identity-avatar sport-icon">🏏</span>
+	                  <span>Cricket</span>
+	                </button>
+	                <button type="button" class="avatar-choice" data-avatar-type="sport:hockey">
+	                  <span class="identity-avatar sport-icon">🏒</span>
+	                  <span>Hockey</span>
+	                </button>
+	                <button type="button" class="avatar-choice" data-avatar-type="sport:american-football">
+	                  <span class="identity-avatar sport-icon">🏈</span>
+	                  <span>Gridiron</span>
+	                </button>
+	                <button type="button" class="avatar-choice" data-avatar-type="sport:golf">
+	                  <span class="identity-avatar sport-icon">⛳</span>
+	                  <span>Golf</span>
+	                </button>
+	                <button type="button" class="avatar-choice" data-avatar-type="sport:racing">
+	                  <span class="identity-avatar sport-icon">🏁</span>
+	                  <span>Racing</span>
+	                </button>
+	              </div>
+	            </div>
+            <button class="btn-primary" id="btn-profile-done" type="button">Get started</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sports Picker Modal -->
+    <div id="sports-picker-modal" class="modal-overlay is-hidden" role="dialog" aria-modal="true" aria-labelledby="sports-picker-title">
+      <div class="modal modal-wide">
+        <div class="modal-header">
+          <span class="gs-wordmark">Grandstand</span>
+          <button type="button" class="btn-icon" id="sports-picker-close" aria-label="Close sports picker">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <h2 id="sports-picker-title">Choose sports</h2>
+          <p class="modal-subtitle">Search by sport, region or competition. More feeds can be enabled from the admin panel as they are added.</p>
+          <input type="search" id="sports-search" class="field-input" placeholder="Search competitions" autocomplete="off">
+          <div class="filter-chip-row" id="sports-region-filters" aria-label="Regions">
+            <button type="button" class="active" data-region="all">All regions</button>
+            <button type="button" data-region="AU/NZ">AU/NZ</button>
+            <button type="button" data-region="US">US</button>
+            <button type="button" data-region="Europe">Europe</button>
+            <button type="button" data-region="Global">Global</button>
+          </div>
+          <div class="filter-chip-row" id="sports-type-filters" aria-label="Sports">
+            <button type="button" class="active" data-sport="all">All sports</button>
+            <button type="button" data-sport="Football">Football</button>
+            <button type="button" data-sport="Rugby League">League</button>
+            <button type="button" data-sport="Rugby Union">Rugby</button>
+            <button type="button" data-sport="Aussie Rules">Aussie Rules</button>
+            <button type="button" data-sport="Basketball">Basketball</button>
+            <button type="button" data-sport="Cricket">Cricket</button>
+            <button type="button" data-sport="Racing">Racing</button>
+          </div>
+          <div class="sports-catalog" id="sports-catalog"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Chat Panel (slide-in) -->
+    <aside id="chat-panel" class="chat-panel is-hidden" aria-label="Live match chat" role="complementary">
+      <div class="chat-header">
+        <div class="chat-match-info">
+          <span class="league-pill" id="chat-league-pill">NRL</span>
+          <strong id="chat-match-title">Loading...</strong>
+        </div>
+        <div class="chat-header-actions">
+          <span class="chat-room-badge is-live" id="chat-room-badge">Live</span>
+          <button type="button" class="btn-icon" id="chat-close-btn" aria-label="Close chat">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="chat-score-banner" id="chat-score-banner"></div>
+      <div class="chat-messages" id="chat-messages" aria-live="polite" aria-atomic="false">
+        <div class="chat-loading">Connecting to live chat...</div>
+      </div>
+      <div class="chat-input-area" id="chat-input-area">
+        <div class="chat-signin-prompt is-hidden" id="chat-signin-prompt">
+          <p>Sign in to join the conversation</p>
+          <button type="button" class="btn-primary btn-small" id="chat-signin-btn">Sign in</button>
+        </div>
+        <form class="chat-form" id="chat-form">
+          <input type="text" id="chat-input" class="chat-input" placeholder="Say something..." maxlength="280" autocomplete="off">
+          <button type="submit" class="btn-send" aria-label="Send message">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          </button>
+        </form>
+        <p class="chat-status" id="chat-status" aria-live="polite"></p>
+      </div>
+    </aside>
+    <div class="chat-backdrop is-hidden" id="chat-backdrop"></div>
+
+    <!-- Settings panel (slide-in from right) -->
+    <aside id="settings-panel" class="settings-panel is-hidden" aria-label="Settings" role="complementary">
+      <div class="settings-header">
+        <h2>Settings</h2>
+        <button type="button" class="btn-icon" id="settings-close-btn" aria-label="Close settings">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="settings-body">
+        <section class="settings-section">
+          <h3 class="settings-section-title">Account</h3>
+          <div id="settings-account-area">
+            <!-- Populated by auth.js -->
+          </div>
+        </section>
+        <section class="settings-section">
+          <h3 class="settings-section-title">Default competitions</h3>
+          <div class="pref-grid" id="settings-pref-grid">
+            <!-- Populated by auth.js -->
+          </div>
+        </section>
+        <section class="settings-section">
+          <h3 class="settings-section-title">Match identity</h3>
+          <div id="settings-identity-area">
+            <!-- Populated by auth.js -->
+          </div>
+        </section>
+        <section class="settings-section">
+          <h3 class="settings-section-title">Display</h3>
+          <div class="settings-row">
+            <span>Theme</span>
+            <div class="segmented" id="settings-theme-filters">
+              <button type="button" data-theme="light">Light</button>
+              <button type="button" class="active" data-theme="dark">Dark</button>
+            </div>
+          </div>
+          <div class="settings-row">
+            <span>Time zone</span>
+            <select id="settings-tz-select" class="settings-select" aria-label="Time zone"></select>
+          </div>
+        </section>
+      </div>
+    </aside>
+    <div class="settings-backdrop is-hidden" id="settings-backdrop"></div>
+
+    <!-- App Header -->
+    <header class="app-header">
+      <div class="header-brand">
+        <p class="eyebrow" id="time-zone-eyebrow">Kickoff times in New Zealand time</p>
+        <h1 class="gs-wordmark-large">Grandstand</h1>
+      </div>
+      <div class="header-tools">
+        <div class="clock-panel">
+          <span class="clock-label" id="clock-tz-label">Now NZT</span>
+          <strong id="current-time">--:--</strong>
+          <span id="current-date">Loading</span>
+        </div>
+        <button type="button" class="btn-icon btn-settings" id="btn-settings" aria-label="Settings">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </button>
+        <div id="auth-header-area" class="auth-header-area">
+          <!-- Populated by auth.js: sign-in button or user avatar -->
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="favorite-live" id="favorite-live" aria-label="Games selected for you">
+        <div class="favorite-live-heading">
+          <div>
+            <p class="section-kicker" id="favorite-live-kicker">For you</p>
+            <h2 id="favorite-live-title">Your next games</h2>
+          </div>
+          <span id="favorite-live-updated"></span>
+        </div>
+        <div class="favorite-live-list" id="favorite-live-list"></div>
+      </section>
+
+      <!-- Controls Bar -->
+      <section class="controls" aria-label="Fixture controls">
+        <div class="mobile-filter-heading">
+          <strong>Filters</strong>
+          <button type="button" class="btn-icon" id="btn-mobile-filters-close" aria-label="Close filters">×</button>
+        </div>
+        <div class="control-group control-view">
+          <span class="control-label">View</span>
+          <div class="segmented" id="mode-filters">
+            <button type="button" data-mode="live">Live</button>
+            <button type="button" class="active" data-mode="fixtures">Upcoming</button>
+            <button type="button" data-mode="results">Results</button>
+            <button type="button" data-mode="tables">Tables</button>
+          </div>
+        </div>
+        <div class="control-group control-filter">
+          <span class="control-label">Competition</span>
+          <div class="segmented" id="competition-filters">
+            <button type="button" class="active" data-filter="all">My Sports</button>
+            <button type="button" data-filter="NRL">NRL</button>
+            <button type="button" data-filter="AFL">AFL</button>
+            <button type="button" data-filter="Super Rugby">Rugby</button>
+            <button type="button" data-filter="FIFA World Cup">World Cup</button>
+          </div>
+          <button type="button" class="btn-secondary-full btn-browse-sports" id="btn-browse-sports">Browse sports</button>
+        </div>
+        <div class="control-group control-filter">
+          <label class="control-label" for="team-select">Team</label>
+          <select id="team-select">
+            <option value="all">All teams</option>
+          </select>
+        </div>
+        <div class="control-group control-filter" id="range-control">
+          <span class="control-label" id="range-label">Window</span>
+          <div class="segmented" id="window-filters">
+            <button type="button" class="active" data-window="next">Next</button>
+            <button type="button" data-window="weekend">Weekend</button>
+            <button type="button" data-window="7">7 days</button>
+            <button type="button" data-window="21">3 weeks</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Summary Strip -->
+      <section class="summary-strip" aria-label="Summary counts">
+        <div>
+          <span id="count-all">0</span>
+          <p>visible</p>
+        </div>
+        <div>
+          <span id="count-nrl">0</span>
+          <p>NRL</p>
+        </div>
+        <div>
+          <span id="count-afl">0</span>
+          <p>AFL</p>
+        </div>
+        <div>
+          <span id="count-super">0</span>
+          <p>Rugby</p>
+        </div>
+        <div>
+          <span id="count-wc">0</span>
+          <p>World Cup</p>
+        </div>
+      </section>
+
+      <section class="community-pulse" id="community-pulse" aria-label="Match rooms">
+        <div>
+          <p class="section-kicker">Match rooms</p>
+          <h2>Watch the game with the room open</h2>
+        </div>
+        <div class="community-pulse-grid">
+          <div>
+            <strong id="room-count-open">0</strong>
+            <span>rooms open soon</span>
+          </div>
+          <div>
+            <strong id="room-count-live">0</strong>
+            <span>live rooms</span>
+          </div>
+          <div>
+            <strong id="room-count-recent">0</strong>
+            <span>recent rooms saved here</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Main Fixture Area -->
+      <section class="fixture-shell" aria-labelledby="fixtures-title">
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker" id="section-kicker-main">Schedule</p>
+            <h2 id="fixtures-title">Upcoming kickoffs</h2>
+          </div>
+          <p id="range-note">Showing the next run of confirmed fixtures.</p>
+        </div>
+        <section id="team-focus" class="team-focus is-hidden" aria-label="Selected team"></section>
+        <div id="fixtures" class="fixture-list"></div>
+      </section>
+
+      <!-- Source Band -->
+      <section class="source-band" aria-label="Data sources">
+        <p>Live data from ESPN. Fixture seed checked against official league pages. Some AFL and Super Rugby fixtures move as broadcast windows are confirmed.</p>
+        <div>
+          <a href="https://www.nrl.com/draw/" target="_blank" rel="noreferrer">NRL draw</a>
+          <a href="https://www.afl.com.au/fixture" target="_blank" rel="noreferrer">AFL fixture</a>
+          <a href="https://www.superrugby.co.nz/pacific/fixtures" target="_blank" rel="noreferrer">Super Rugby</a>
+          <a href="admin.html" id="admin-link" class="admin-link is-hidden">Admin</a>
+        </div>
+      </section>
+    </main>
+
+    <nav class="mobile-bottom-nav" aria-label="Primary app navigation">
+      <button type="button" data-mobile-mode="live"><span aria-hidden="true">●</span><small>Live</small></button>
+      <button type="button" class="active" data-mobile-mode="fixtures"><span aria-hidden="true">⌁</span><small>Upcoming</small></button>
+      <button type="button" data-mobile-mode="results"><span aria-hidden="true">✓</span><small>Results</small></button>
+      <button type="button" data-mobile-mode="tables"><span aria-hidden="true">▤</span><small>Tables</small></button>
+      <button type="button" id="btn-mobile-filters"><span aria-hidden="true">≡</span><small>Filters</small></button>
+    </nav>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <script>
+      window.GRANDSTAND_EXPECTED_AUTH_BUILD = "github-pages-auth-v21";
+    </script>
+    <script src="js/config.js?v=21"></script>
+    <script src="js/identity.js?v=21"></script>
+    <script src="js/auth-v21.js"></script>
+    <script src="js/chat.js?v=21"></script>
+    <script src="js/script.js?v=21"></script>
+    <script src="js/sw-register.js?v=21"></script>
+    <script>
+      (() => {
+        const expected = window.GRANDSTAND_EXPECTED_AUTH_BUILD;
+        const showDiagnostic = (message) => {
+          console.error("[Grandstand Diagnostics]", message, {
+            expected,
+            actual: window.gs?.authBuild || null,
+            protocol: window.location.protocol,
+            url: window.location.href,
+          });
+          let banner = document.getElementById("grandstand-diagnostic-banner");
+          if (!banner) {
+            banner = document.createElement("div");
+            banner.id = "grandstand-diagnostic-banner";
+            banner.className = "diagnostic-banner";
+            document.body.appendChild(banner);
+          }
+          banner.textContent = message;
+        };
+
+        window.addEventListener("load", () => {
+          window.setTimeout(() => {
+            const actual = window.gs?.authBuild || "";
+            const authScript = [...document.scripts].find(script => script.src.includes("auth-"))?.getAttribute("src") || "";
+            if (!authScript.includes("auth-v21.js")) {
+              showDiagnostic(`Grandstand loaded the wrong auth script: ${authScript || "none"}.`);
+              return;
+            }
+            if (actual !== expected) {
+              showDiagnostic(`Grandstand loaded stale app files. Expected ${expected}, got ${actual || "nothing"}.`);
+              return;
+            }
+
+            const renderedChoices = document.querySelectorAll("#avatar-choice-grid .avatar-choice, #sport-icon-fallback-grid .avatar-choice").length;
+            if (renderedChoices > 0 && renderedChoices < 13) {
+              showDiagnostic(`Chat icon picker loaded incompletely (${renderedChoices}/13 choices).`);
+            }
+          }, 500);
+        });
+      })();
+    </script>
+  </body>
+</html>

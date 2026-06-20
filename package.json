@@ -1,0 +1,27 @@
+{
+  "name": "grandstand",
+  "version": "1.0.0",
+  "description": "Grandstand — live sports scores, standings and game-day social chat.",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "npx serve public -l 3000",
+    "build": "echo 'Static site — no build step required.'",
+    "lint": "npx eslint public/js/*.js",
+    "deploy": "git push origin main"
+  },
+  "devDependencies": {
+    "serve": "^14.2.3",
+    "eslint": "^9.0.0"
+  },
+  "keywords": ["sports", "nrl", "afl", "super-rugby", "fifa", "live-scores", "social"],
+  "author": "Tony Patrick",
+  "license": "UNLICENSED",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ponyfizz2/grandstand"
+  }
+}

@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Grandstand Admin</title>
+  <link rel="icon" type="image/png" href="assets/icons/icon-192.png" />
+  <link rel="stylesheet" href="css/styles.css?v=21" />
+  <link rel="stylesheet" href="css/admin.css?v=21" />
+</head>
+<body class="admin-body">
+
+  <!-- ── Admin Header ── -->
+  <header class="admin-header">
+    <div class="admin-header-inner">
+      <a href="./" class="admin-brand">
+        <svg class="brand-icon" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect width="36" height="36" rx="8" fill="var(--accent)"/>
+          <path d="M8 26 L18 10 L28 26 Z" fill="white" opacity="0.9"/>
+          <rect x="6" y="26" width="24" height="3" rx="1.5" fill="white" opacity="0.7"/>
+        </svg>
+        <span>Grandstand <em>Admin</em></span>
+      </a>
+      <nav class="admin-nav-tabs" role="tablist">
+        <button class="admin-tab active" data-tab="competitions" role="tab" aria-selected="true">Competitions</button>
+        <button class="admin-tab" data-tab="users" role="tab" aria-selected="false">Users</button>
+        <button class="admin-tab" data-tab="moderation" role="tab" aria-selected="false">Moderation</button>
+        <button class="admin-tab" data-tab="analytics" role="tab" aria-selected="false">Analytics</button>
+      </nav>
+      <div class="admin-header-actions">
+        <span id="adminUserName" class="admin-user-badge"></span>
+        <a href="./" class="btn btn-sm btn-ghost">← Back to App</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ── Auth Guard Overlay ── -->
+  <div id="adminAuthGuard" class="admin-auth-guard" hidden>
+    <div class="auth-guard-card">
+      <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" class="guard-icon">
+        <rect width="36" height="36" rx="8" fill="var(--accent)"/>
+        <path d="M8 26 L18 10 L28 26 Z" fill="white" opacity="0.9"/>
+        <rect x="6" y="26" width="24" height="3" rx="1.5" fill="white" opacity="0.7"/>
+      </svg>
+      <h2>Admin Access Required</h2>
+      <p>You must be signed in as an administrator to access this area.</p>
+      <button id="guardSignInBtn" class="btn btn-primary">Sign in with Google</button>
+      <a href="./" class="btn btn-ghost btn-sm" style="margin-top:0.5rem">Return to Grandstand</a>
+    </div>
+  </div>
+
+  <!-- ── Main Admin Content ── -->
+  <main class="admin-main" id="adminMain" hidden>
+
+    <!-- ════ TAB: COMPETITIONS ════ -->
+    <section class="admin-section" id="tab-competitions" role="tabpanel">
+      <div class="admin-section-header">
+        <h1>Competitions</h1>
+        <button class="btn btn-primary" id="addCompBtn">+ Add Competition</button>
+      </div>
+
+      <div class="admin-card">
+        <div class="admin-table-toolbar">
+          <input type="search" id="compSearch" placeholder="Search competitions…" class="admin-search" />
+          <label class="toggle-label">
+            <input type="checkbox" id="showInactiveComps" />
+            Show inactive
+          </label>
+        </div>
+        <div class="table-scroll">
+          <table class="admin-table" id="competitionsTable">
+            <thead>
+              <tr>
+                <th>Label</th>
+                <th>Sport Slug</th>
+                <th>League Slug</th>
+                <th>Color</th>
+                <th>Finals Qual.</th>
+                <th>Finals Protected</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="competitionsTbody">
+              <tr class="table-loading"><td colspan="8">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════ TAB: USERS ════ -->
+    <section class="admin-section hidden" id="tab-users" role="tabpanel">
+      <div class="admin-section-header">
+        <h1>Users</h1>
+        <span id="userCount" class="admin-badge">0 users</span>
+      </div>
+
+      <div class="admin-card">
+        <div class="admin-table-toolbar">
+          <input type="search" id="userSearch" placeholder="Search users…" class="admin-search" />
+          <select id="userRoleFilter" class="admin-select">
+            <option value="">All roles</option>
+            <option value="admin">Admins</option>
+            <option value="user">Regular users</option>
+          </select>
+        </div>
+        <div class="table-scroll">
+          <table class="admin-table" id="usersTable">
+            <thead>
+              <tr>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Joined</th>
+                <th>Competitions</th>
+                <th>Admin</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="usersTbody">
+              <tr class="table-loading"><td colspan="6">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-pagination" id="userPagination"></div>
+      </div>
+    </section>
+
+    <!-- ════ TAB: MODERATION ════ -->
+    <section class="admin-section hidden" id="tab-moderation" role="tabpanel">
+      <div class="admin-section-header">
+        <h1>Comment Moderation</h1>
+        <div class="mod-filter-group">
+          <select id="modStatusFilter" class="admin-select">
+            <option value="active">Active comments</option>
+            <option value="deleted">Deleted comments</option>
+            <option value="all">All comments</option>
+          </select>
+          <button class="btn btn-sm btn-ghost" id="refreshModBtn">↺ Refresh</button>
+        </div>
+      </div>
+
+      <div class="admin-card">
+        <div class="table-scroll">
+          <table class="admin-table" id="moderationTable">
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Game</th>
+                <th>User</th>
+                <th>Message</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="moderationTbody">
+              <tr class="table-loading"><td colspan="6">Loading…</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="table-pagination" id="modPagination"></div>
+      </div>
+    </section>
+
+    <!-- ════ TAB: ANALYTICS ════ -->
+    <section class="admin-section hidden" id="tab-analytics" role="tabpanel">
+      <div class="admin-section-header">
+        <h1>Analytics</h1>
+        <span class="admin-note">Last 30 days</span>
+      </div>
+
+      <div class="analytics-grid">
+        <div class="stat-card">
+          <div class="stat-value" id="statTotalUsers">—</div>
+          <div class="stat-label">Total Users</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="statTotalMessages">—</div>
+          <div class="stat-label">Chat Messages (30d)</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="statActiveComps">—</div>
+          <div class="stat-label">Active Competitions</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-value" id="statDeletedMessages">—</div>
+          <div class="stat-label">Moderated Messages</div>
+        </div>
+      </div>
+
+      <div class="admin-card" style="margin-top:1.5rem">
+        <h2 class="admin-card-title">Top Chat Games (30d)</h2>
+        <div id="topGamesChart" class="top-games-list">
+          <p class="admin-empty">Loading activity data…</p>
+        </div>
+      </div>
+
+      <div class="admin-card" style="margin-top:1rem">
+        <h2 class="admin-card-title">Recent Signups</h2>
+        <div id="recentSignups" class="recent-signups-list">
+          <p class="admin-empty">Loading…</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ════ COMPETITION MODAL ════ -->
+  <div id="competitionModal" class="modal-backdrop" hidden role="dialog" aria-modal="true" aria-labelledby="compModalTitle">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <h2 id="compModalTitle">Add Competition</h2>
+        <button class="modal-close" id="closeCompModal" aria-label="Close">✕</button>
+      </div>
+      <div class="modal-body">
+        <form id="competitionForm" novalidate>
+          <input type="hidden" id="compId" />
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="compLabel">Display Label <span class="req">*</span></label>
+              <input type="text" id="compLabel" placeholder="e.g. NRL 2025" required />
+            </div>
+            <div class="form-group">
+              <label for="compColor">Accent Color</label>
+              <div class="color-input-row">
+                <input type="color" id="compColorPicker" value="#6366f1" />
+                <input type="text" id="compColor" placeholder="#6366f1" pattern="^#[0-9a-fA-F]{6}$" />
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="compSportSlug">Sport Slug <span class="req">*</span></label>
+              <input type="text" id="compSportSlug" placeholder="e.g. rugby-league, soccer, baseball" required />
+              <small>ESPN sport path segment</small>
+            </div>
+            <div class="form-group">
+              <label for="compLeagueSlug">League Slug <span class="req">*</span></label>
+              <input type="text" id="compLeagueSlug" placeholder="e.g. 3, afl, mlb, fifa.world" required />
+              <small>ESPN league identifier</small>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="compFinalsQual">Finals Qualifying Positions</label>
+              <input type="number" id="compFinalsQual" min="0" max="20" value="0" />
+              <small>0 = not applicable</small>
+            </div>
+            <div class="form-group">
+              <label for="compFinalsProtected">Finals Protected Positions</label>
+              <input type="number" id="compFinalsProtected" min="0" max="20" value="0" />
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="compFinalsQualLabel">Qualifying Zone Label</label>
+              <input type="text" id="compFinalsQualLabel" placeholder="e.g. Finals" />
+            </div>
+            <div class="form-group">
+              <label for="compFinalsProtectedLabel">Protected Zone Label</label>
+              <input type="text" id="compFinalsProtectedLabel" placeholder="e.g. Top 4" />
+            </div>
+          </div>
+
+          <!-- ESPN API test -->
+          <div class="form-group">
+            <label>ESPN API Preview</label>
+            <div class="api-preview-bar">
+              <code id="apiPreviewUrl" class="api-preview-url">—</code>
+              <button type="button" id="testApiBtn" class="btn btn-sm btn-ghost">Test API</button>
+            </div>
+            <div id="apiTestResult" class="api-test-result hidden"></div>
+          </div>
+
+          <div class="form-group">
+            <label class="toggle-label">
+              <input type="checkbox" id="compIsActive" checked />
+              Active (visible in app)
+            </label>
+          </div>
+
+          <div id="compFormError" class="form-error hidden"></div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" id="cancelCompBtn">Cancel</button>
+        <button type="button" class="btn btn-primary" id="saveCompBtn">Save Competition</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ════ CONFIRM DELETE MODAL ════ -->
+  <div id="confirmModal" class="modal-backdrop" hidden role="dialog" aria-modal="true">
+    <div class="modal modal-sm">
+      <div class="modal-header">
+        <h2 id="confirmTitle">Confirm Action</h2>
+        <button class="modal-close" id="closeConfirmModal" aria-label="Close">✕</button>
+      </div>
+      <div class="modal-body">
+        <p id="confirmMessage">Are you sure?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" id="cancelConfirmBtn">Cancel</button>
+        <button type="button" class="btn btn-danger" id="confirmActionBtn">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Toast ── -->
+  <div id="adminToast" class="admin-toast" aria-live="polite"></div>
+
+  <!-- ── Scripts ── -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+  <script src="js/config.js?v=21"></script>
+  <script src="js/admin.js?v=21"></script>
+</body>
+</html>
