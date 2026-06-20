@@ -14,10 +14,19 @@
     "deploy": "git push origin main"
   },
   "devDependencies": {
+    "eslint": "^9.0.0",
     "serve": "^14.2.3",
-    "eslint": "^9.0.0"
+    "supabase": "^2.107.0"
   },
-  "keywords": ["sports", "nrl", "afl", "super-rugby", "fifa", "live-scores", "social"],
+  "keywords": [
+    "sports",
+    "nrl",
+    "afl",
+    "super-rugby",
+    "fifa",
+    "live-scores",
+    "social"
+  ],
   "author": "Tony Patrick",
   "license": "UNLICENSED",
   "repository": {
