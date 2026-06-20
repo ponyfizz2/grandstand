@@ -10,12 +10,12 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Grandstand">
     <title>Grandstand</title>
-    <link rel="manifest" href="manifest.json?v=21">
+    <link rel="manifest" href="manifest.json?v=22">
     <link rel="apple-touch-icon" href="assets/icons/icon-192.png">
-    <link rel="stylesheet" href="css/styles.css?v=21">
+    <link rel="stylesheet" href="css/styles.css?v=22">
   </head>
   <body data-theme="dark">
-    <div class="build-badge" id="build-badge">GITHUB v21 · pages + supabase</div>
+    <div class="build-badge" id="build-badge">GITHUB v22 · simpler sign in</div>
 
     <!-- Auth Modal -->
     <div id="auth-modal" class="modal-overlay is-hidden" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
@@ -23,30 +23,48 @@
         <div class="modal-header">
           <span class="gs-wordmark">Grandstand</span>
         </div>
-        <div class="modal-body" id="auth-modal-body">
-          <h2 id="auth-modal-title">Welcome to Grandstand</h2>
-          <p class="modal-subtitle">Create your fan identity, sign in, or keep browsing as a guest.</p>
-          <div class="auth-choice-row" id="auth-mode-tabs" role="tablist" aria-label="Account action">
-            <button type="button" class="active" data-auth-mode="signup">Sign up</button>
-            <button type="button" data-auth-mode="signin">Sign in</button>
+        <div class="modal-body auth-modal-body" id="auth-modal-body">
+          <div class="auth-view" id="auth-provider-view">
+            <div class="auth-intro">
+              <h2 id="auth-modal-title">Join the conversation</h2>
+              <p class="modal-subtitle">Follow your teams and chat with fans during every game.</p>
+            </div>
+            <div class="auth-provider-actions">
+              <button class="btn-google" id="btn-sign-in-google" type="button">
+                <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
+                Continue with Google
+              </button>
+              <button class="btn-secondary-full" id="btn-auth-email-open" type="button">Continue with email</button>
+            </div>
+            <p class="auth-terms">By continuing, you agree to our <a href="#" class="text-link">Terms</a> and <a href="#" class="text-link">Privacy Policy</a>.</p>
+            <div class="auth-guest-area">
+              <button class="btn-guest" id="btn-continue-guest" type="button">Browse as guest</button>
+              <span>Scores and fixtures only</span>
+            </div>
           </div>
-          <button class="btn-google" id="btn-sign-in-google" type="button">
-            <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.35-8.16 2.35-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
-            Continue with Google
-          </button>
-          <div class="auth-divider"><span>or use email</span></div>
-          <div class="auth-email-form">
-            <label class="field-label" for="auth-email">Email</label>
-            <input type="email" id="auth-email" class="field-input" placeholder="you@example.com" autocomplete="email">
-            <label class="field-label" for="auth-password">Password</label>
-            <input type="password" id="auth-password" class="field-input" placeholder="Strong password" autocomplete="new-password">
-            <p class="auth-status" id="auth-status" aria-live="polite"></p>
-            <button class="btn-primary" id="btn-auth-email-submit" type="button">Create account</button>
-            <button class="btn-text-small is-hidden" id="btn-auth-forgot-password" type="button">Reset password</button>
+
+          <div class="auth-view is-hidden" id="auth-email-view">
+            <button class="auth-back" id="btn-auth-email-back" type="button" aria-label="Back to sign-in choices">
+              <span aria-hidden="true">←</span> Back
+            </button>
+            <div class="auth-intro">
+              <h2 id="auth-email-title">Sign in with email</h2>
+              <p class="modal-subtitle" id="auth-email-subtitle">Welcome back. Enter your account details.</p>
+            </div>
+            <div class="auth-choice-row" id="auth-mode-tabs" role="tablist" aria-label="Email account action">
+              <button type="button" class="active" role="tab" aria-selected="true" data-auth-mode="signin">Sign in</button>
+              <button type="button" role="tab" aria-selected="false" data-auth-mode="signup">Create account</button>
+            </div>
+            <form class="auth-email-form" id="auth-email-form">
+              <label class="field-label" for="auth-email">Email</label>
+              <input type="email" id="auth-email" class="field-input" placeholder="you@example.com" autocomplete="email" required>
+              <label class="field-label" for="auth-password">Password</label>
+              <input type="password" id="auth-password" class="field-input" placeholder="Password" autocomplete="current-password" required>
+              <p class="auth-status" id="auth-status" aria-live="polite"></p>
+              <button class="btn-primary" id="btn-auth-email-submit" type="submit">Sign in</button>
+              <button class="btn-text-small" id="btn-auth-forgot-password" type="button">Forgot password?</button>
+            </form>
           </div>
-          <p class="auth-terms">By signing in you agree to our <a href="#" class="text-link">Terms</a> and <a href="#" class="text-link">Privacy Policy</a>.</p>
-          <button class="btn-secondary-full" id="btn-continue-guest" type="button">Continue as guest</button>
-          <p class="guest-note">Guests can view scores and fixtures only. Sign in to post, follow teams, save preferences or use notifications.</p>
         </div>
       </div>
     </div>
@@ -81,7 +99,7 @@
           </div>
           <!-- Step 3: Identity and display -->
           <div id="onboarding-step-3" class="is-hidden">
-            <h2>Set your match-day identity <span class="build-inline">v21</span></h2>
+            <h2>Set your match-day identity <span class="build-inline">v22</span></h2>
             <p class="modal-subtitle">Choose your timezone, favourite team and chat icon.</p>
             <div class="field-group">
               <label class="field-label" for="onboarding-tz-select">Time zone</label>
@@ -471,14 +489,14 @@
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
     <script>
-      window.GRANDSTAND_EXPECTED_AUTH_BUILD = "github-pages-auth-v21";
+      window.GRANDSTAND_EXPECTED_AUTH_BUILD = "github-pages-auth-v22";
     </script>
-    <script src="js/config.js?v=21"></script>
-    <script src="js/identity.js?v=21"></script>
-    <script src="js/auth-v21.js"></script>
-    <script src="js/chat.js?v=21"></script>
-    <script src="js/script.js?v=21"></script>
-    <script src="js/sw-register.js?v=21"></script>
+    <script src="js/config.js?v=22"></script>
+    <script src="js/identity.js?v=22"></script>
+    <script src="js/auth-v22.js"></script>
+    <script src="js/chat.js?v=22"></script>
+    <script src="js/script.js?v=22"></script>
+    <script src="js/sw-register.js?v=22"></script>
     <script>
       (() => {
         const expected = window.GRANDSTAND_EXPECTED_AUTH_BUILD;
@@ -503,7 +521,7 @@
           window.setTimeout(() => {
             const actual = window.gs?.authBuild || "";
             const authScript = [...document.scripts].find(script => script.src.includes("auth-"))?.getAttribute("src") || "";
-            if (!authScript.includes("auth-v21.js")) {
+            if (!authScript.includes("auth-v22.js")) {
               showDiagnostic(`Grandstand loaded the wrong auth script: ${authScript || "none"}.`);
               return;
             }

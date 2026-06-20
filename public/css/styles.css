@@ -86,20 +86,7 @@ body[data-theme="dark"] {
 body.modal-open, body.chat-open { overflow: hidden; }
 
 .build-badge {
-  position: fixed;
-  top: 10px;
-  left: 10px;
-  z-index: 10000;
-  padding: 6px 9px;
-  border: 1px solid color-mix(in srgb, var(--green) 56%, var(--line));
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--green) 16%, var(--panel));
-  color: var(--green);
-  font-size: 0.68rem;
-  font-weight: 950;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  pointer-events: none;
+  display: none;
 }
 
 a { color: inherit; }
@@ -261,6 +248,68 @@ button.active {
   background: var(--control-surface);
 }
 
+.auth-modal-body {
+  flex: 0 1 auto;
+  padding: 28px;
+}
+
+.auth-view {
+  display: grid;
+  gap: 20px;
+}
+
+.auth-intro {
+  display: grid;
+  gap: 7px;
+  text-align: center;
+}
+
+.auth-intro h2 {
+  font-size: 1.45rem;
+}
+
+.auth-provider-actions {
+  display: grid;
+  gap: 10px;
+}
+
+.auth-guest-area {
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  padding-top: 4px;
+  border-top: 1px solid var(--line);
+}
+
+.auth-guest-area span {
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.btn-guest,
+.auth-back {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-weight: 800;
+}
+
+.btn-guest {
+  padding: 10px 12px 4px;
+  color: var(--ink);
+}
+
+.btn-guest:hover,
+.auth-back:hover {
+  color: var(--navy);
+}
+
+.auth-back {
+  justify-self: start;
+  min-height: 32px;
+  padding: 0;
+}
+
 .auth-choice-row button {
   min-height: 34px;
   border-radius: 8px;
@@ -270,7 +319,7 @@ button.active {
 
 .auth-email-form {
   display: grid;
-  gap: 8px;
+  gap: 10px;
 }
 
 .auth-divider {
@@ -2163,6 +2212,16 @@ body.onboarding-complete #onboarding-modal {
   .modal {
     max-width: none;
     max-height: calc(100dvh - max(20px, env(safe-area-inset-top)) - max(20px, env(safe-area-inset-bottom)));
+  }
+
+  #auth-modal {
+    align-items: center;
+    justify-items: center;
+  }
+
+  #auth-modal .modal {
+    width: min(100%, 420px);
+    height: auto;
   }
 
   .modal-wide {

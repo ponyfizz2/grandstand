@@ -1,5 +1,5 @@
 /**
- * BUILD: github-pages-auth-v21
+ * BUILD: github-pages-auth-v22
  *
  * Grandstand — Auth Module
  * Handles Google OAuth via Supabase, user profiles, onboarding,
@@ -23,7 +23,7 @@
 	    isAdmin: false,
 	    isGuest: false,
 	  };
-  window.gs.authBuild = "github-pages-auth-v21";
+  window.gs.authBuild = "github-pages-auth-v22";
 
   // ── DOM refs ──────────────────────────────────────────────────
   const authModal = document.getElementById("auth-modal");
@@ -37,9 +37,16 @@
   // Auth modal
   const btnSignInGoogle = document.getElementById("btn-sign-in-google");
   const btnContinueGuest = document.getElementById("btn-continue-guest");
+  const authProviderView = document.getElementById("auth-provider-view");
+  const authEmailView = document.getElementById("auth-email-view");
+  const authEmailOpen = document.getElementById("btn-auth-email-open");
+  const authEmailBack = document.getElementById("btn-auth-email-back");
+  const authEmailTitle = document.getElementById("auth-email-title");
+  const authEmailSubtitle = document.getElementById("auth-email-subtitle");
   const authModeBtns = document.getElementById("auth-mode-tabs");
   const authEmailInput = document.getElementById("auth-email");
   const authPasswordInput = document.getElementById("auth-password");
+  const authEmailForm = document.getElementById("auth-email-form");
   const authEmailSubmit = document.getElementById("btn-auth-email-submit");
   const authForgotPassword = document.getElementById("btn-auth-forgot-password");
   const authStatus = document.getElementById("auth-status");
@@ -112,7 +119,7 @@
   let pendingUsername = "";
   let pendingPrefs = [];
   let pendingAvatarType = "google";
-  let authMode = "signup";
+  let authMode = "signin";
 
   // ── Init ──────────────────────────────────────────────────────
   async function init() {
@@ -400,6 +407,7 @@
 
   // ── Auth modal ────────────────────────────────────────────────
   function showAuthModal() {
+    showAuthProviderView();
     authModal.classList.remove("is-hidden");
     document.body.classList.add("modal-open");
   }
@@ -410,6 +418,8 @@
   }
 
   btnSignInGoogle?.addEventListener("click", signInWithGoogle);
+  authEmailOpen?.addEventListener("click", showAuthEmailView);
+  authEmailBack?.addEventListener("click", showAuthProviderView);
   btnContinueGuest?.addEventListener("click", () => {
     markGuestBrowseChosen();
     hideAuthModal();
@@ -421,7 +431,10 @@
     authMode = btn.dataset.authMode;
     syncAuthMode();
   });
-  authEmailSubmit?.addEventListener("click", signInWithEmail);
+  authEmailForm?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    signInWithEmail();
+  });
   authForgotPassword?.addEventListener("click", sendPasswordReset);
   authPasswordInput?.addEventListener("input", () => {
     if (authMode !== "signup") return;
@@ -431,10 +444,18 @@
 
   function syncAuthMode() {
     authModeBtns?.querySelectorAll("[data-auth-mode]").forEach((btn) => {
-      btn.classList.toggle("active", btn.dataset.authMode === authMode);
+      const isActive = btn.dataset.authMode === authMode;
+      btn.classList.toggle("active", isActive);
+      btn.setAttribute("aria-selected", String(isActive));
     });
     if (authEmailSubmit) authEmailSubmit.textContent = authMode === "signup" ? "Create account" : "Sign in";
     if (authForgotPassword) authForgotPassword.classList.toggle("is-hidden", authMode === "signup");
+    if (authEmailTitle) authEmailTitle.textContent = authMode === "signup" ? "Create your account" : "Sign in with email";
+    if (authEmailSubtitle) {
+      authEmailSubtitle.textContent = authMode === "signup"
+        ? "Use an email address you can access."
+        : "Welcome back. Enter your account details.";
+    }
     if (authPasswordInput) {
       authPasswordInput.placeholder = authMode === "signup" ? "Strong password" : "Password";
       authPasswordInput.autocomplete = authMode === "signup" ? "new-password" : "current-password";
@@ -442,6 +463,21 @@
     setAuthStatus(authMode === "signup"
       ? "Use at least 10 characters with uppercase, lowercase and a number."
       : "");
+  }
+
+  function showAuthProviderView() {
+    authProviderView?.classList.remove("is-hidden");
+    authEmailView?.classList.add("is-hidden");
+    authModal?.setAttribute("aria-labelledby", "auth-modal-title");
+    setAuthStatus("");
+  }
+
+  function showAuthEmailView() {
+    authProviderView?.classList.add("is-hidden");
+    authEmailView?.classList.remove("is-hidden");
+    authModal?.setAttribute("aria-labelledby", "auth-email-title");
+    syncAuthMode();
+    window.setTimeout(() => authEmailInput?.focus(), 0);
   }
 
   function setAuthStatus(message, isError = false) {

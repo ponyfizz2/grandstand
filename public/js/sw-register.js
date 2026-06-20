@@ -10,7 +10,7 @@
 (function () {
   "use strict";
 
-  const BUILD = "github-pages-v21";
+  const BUILD = "github-pages-v22";
   const CLEANUP_KEY = `gs.cacheCleanup.${BUILD}`;
 
   window.gs = window.gs || {};

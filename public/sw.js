@@ -10,7 +10,7 @@
  * Cache names are versioned — bump CACHE_VERSION on each deploy.
  */
 
-const CACHE_VERSION    = 'gs-v21';
+const CACHE_VERSION    = 'gs-v22';
 const SHELL_CACHE      = `${CACHE_VERSION}-shell`;
 const DATA_CACHE       = `${CACHE_VERSION}-data`;
 const ESPN_CACHE_TTL   = 5 * 60 * 1000; // 5 minutes
@@ -23,7 +23,7 @@ const SHELL_ASSETS = [
   '/js/config.js',
   '/js/script.js',
   '/js/identity.js',
-  '/js/auth-v21.js',
+  '/js/auth-v22.js',
   '/js/chat.js',
   '/manifest.json',
   '/assets/icons/icon-192.png',
