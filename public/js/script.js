@@ -328,6 +328,19 @@ const liveState = {
   updatedAt: null,
   scoreSource: "shared",
 };
+let featuredHomeKeys = new Set();
+
+function syncThemeToggle() {
+  const button = document.getElementById("btn-theme-toggle");
+  const nextTheme = document.body.dataset.theme === "dark" ? "light" : "dark";
+  if (button) {
+    button.setAttribute("aria-label", `Switch to ${nextTheme} mode`);
+    button.title = `Switch to ${nextTheme} mode`;
+  }
+  document.querySelectorAll("#settings-theme-filters button").forEach((themeButton) => {
+    themeButton.classList.toggle("active", themeButton.dataset.theme === document.body.dataset.theme);
+  });
+}
 
 // Expose setters for settings panel
 window.gs = window.gs || {};
@@ -336,6 +349,7 @@ window.gs.setTheme = (theme) => {
   state.theme = theme;
   document.body.dataset.theme = theme;
   localStorage.setItem("gs.theme", theme);
+  syncThemeToggle();
 };
 window.gs.setTz = (tz) => {
   state.timeZone = normalizeTimeZone(tz);
@@ -378,6 +392,7 @@ const sportsSearchEl = document.getElementById("sports-search");
 const sportsRegionFiltersEl = document.getElementById("sports-region-filters");
 const sportsTypeFiltersEl = document.getElementById("sports-type-filters");
 const liveStripListEl = document.getElementById("live-strip-list");
+const themeToggleEl = document.getElementById("btn-theme-toggle");
 const homeRoomListEl = document.getElementById("home-room-list");
 const homeNextListEl = document.getElementById("home-next-list");
 const homeResultListEl = document.getElementById("home-result-list");
@@ -456,9 +471,16 @@ document.getElementById("btn-mobile-filters")?.addEventListener("click", () => {
   controlsEl?.classList.add("filters-open");
 });
 document.getElementById("btn-mobile-filters-close")?.addEventListener("click", closeMobileFilters);
+themeToggleEl?.addEventListener("click", () => {
+  window.gs.setTheme(state.theme === "dark" ? "light" : "dark");
+});
 favoriteLiveListEl?.addEventListener("click", (e) => {
   const card = e.target.closest("[data-for-you-league]");
   if (!card) return;
+  if (card.dataset.featuredRoomId) {
+    openRoomById(card.dataset.featuredRoomId);
+    return;
+  }
   state.competition = card.dataset.forYouLeague;
   ensureCompetitionQuickButton(state.competition);
   setActive(document.querySelector(`#competition-filters button[data-filter="${cssEscape(state.competition)}"]`), "#competition-filters");
@@ -556,6 +578,7 @@ document.addEventListener("gs:auth-signout", () => {
 populateTimeZoneSelect();
 populateTeamSelect();
 document.body.dataset.theme = state.theme;
+syncThemeToggle();
 safeRender();
 tick();
 loadLiveData();
@@ -656,6 +679,7 @@ function applyProfileDisplay(profile) {
     state.theme = profile.theme;
     document.body.dataset.theme = profile.theme;
     localStorage.setItem("gs.theme", profile.theme);
+    syncThemeToggle();
   }
   if (profile?.timezone) {
     state.timeZone = normalizeTimeZone(profile.timezone);
@@ -741,20 +765,23 @@ function renderFavoriteLiveShelf(liveGames, upcomingGames) {
     Number(teamMatches(b, favoriteTeam)) - Number(teamMatches(a, favoriteTeam)) ||
     a.date - b.date;
   const preferredLive = liveGames.filter(isPreferred).sort(prioritySort);
-  const relevant = preferredLive.slice(0, 4);
+  const preferredUpcoming = upcomingGames.filter(isPreferred).sort(prioritySort);
+  const showingLive = preferredLive.length > 0;
+  const relevant = showingLive ? preferredLive.slice(0, 4) : preferredUpcoming.slice(0, 1);
+  featuredHomeKeys = new Set(relevant.map(matchKey));
 
-  favoriteLiveEl.classList.toggle("has-live", relevant.length > 0);
-  favoriteLiveKickerEl.textContent = "Live now";
-  favoriteLiveTitleEl.textContent = relevant.length ? "Live now for you" : "No games live right now";
-  favoriteLiveUpdatedEl.textContent = relevant.length
+  favoriteLiveEl.classList.toggle("has-live", showingLive);
+  favoriteLiveKickerEl.textContent = showingLive ? "Live now" : "Up next";
+  favoriteLiveTitleEl.textContent = showingLive ? "Live for you" : "Featured game";
+  favoriteLiveUpdatedEl.textContent = showingLive
     ? (liveState.updatedAt ? `Updated ${formatTime(liveState.updatedAt)}` : "Shared live feed")
-    : "Rooms opening soon";
+    : relevant.length ? displayTimeZoneObj().label : "";
 
   if (!relevant.length) {
     favoriteLiveListEl.innerHTML = `
       <div class="favorite-live-empty">
-        <strong>The next room is not far away.</strong>
-        <span>See joinable rooms below, or check Your next games.</span>
+        <strong>No games found for your sports.</strong>
+        <span>Choose more competitions in Following.</span>
       </div>
     `;
     return;
@@ -762,12 +789,13 @@ function renderFavoriteLiveShelf(liveGames, upcomingGames) {
 
   favoriteLiveListEl.innerHTML = relevant.map((game) => {
     const favoriteMatch = favoriteTeam && teamMatches(game, favoriteTeam);
-    const status = liveStatusText(game);
-    const centre = `${scoreText(game, "home")}–${scoreText(game, "away")}`;
+    const status = showingLive ? liveStatusText(game) : `${formatDay(game.date)} · ${formatTime(game.date)}`;
+    const centre = showingLive ? `${scoreText(game, "home")}–${scoreText(game, "away")}` : "vs";
     return `
-    <button type="button" class="favorite-live-card is-live"
+    <button type="button" class="favorite-live-card ${showingLive ? "is-live" : "is-upcoming"}"
             data-for-you-league="${escapeAttr(game.league)}"
-            data-for-you-mode="live">
+            ${showingLive ? `data-featured-room-id="${escapeAttr(matchKey(game))}"` : ""}
+            data-for-you-mode="${showingLive ? "live" : "fixtures"}">
       <span class="favorite-live-meta">
         <span class="league-pill" style="--league-color:${leagues[game.league]?.color || "#61717f"}">${game.league === "FIFA World Cup" ? "World Cup" : game.league}</span>
         <span>${favoriteMatch ? "Your team · " : ""}${escapeHtml(status)}</span>
@@ -777,7 +805,7 @@ function renderFavoriteLiveShelf(liveGames, upcomingGames) {
         <strong>${centre}</strong>
         <span>${teamIconHtml(game.away, game.league, "favorite-live-logo")}${escapeHtml(game.away)}</span>
       </span>
-      <span class="favorite-live-action">Open live view</span>
+      <span class="favorite-live-action">${showingLive ? "Join live room" : "View game"}</span>
     </button>
   `;
   }).join("");
@@ -785,6 +813,7 @@ function renderFavoriteLiveShelf(liveGames, upcomingGames) {
 
 function renderLiveStrip(liveGames) {
   if (!liveStripListEl) return;
+  liveStripListEl.closest(".live-now-strip")?.classList.toggle("is-empty", liveGames.length === 0);
   if (!liveGames.length) {
     liveStripListEl.innerHTML = `<span>No games live right now. Rooms are opening soon.</span>`;
     return;
@@ -804,6 +833,7 @@ function renderHomeNextGames(upcomingGames) {
   const favoriteTeam = window.gs?.auth?.profile?.favorite_team || "";
   const relevant = upcomingGames
     .filter((game) => !prefs || prefs.has(game.league))
+    .filter((game) => !featuredHomeKeys.has(matchKey(game)))
     .sort((a, b) => Number(teamMatches(b, favoriteTeam)) - Number(teamMatches(a, favoriteTeam)) || a.date - b.date)
     .slice(0, 4);
   if (!relevant.length) {
@@ -823,7 +853,7 @@ function renderHomeRecentResults(results) {
   homeResultListEl.innerHTML = relevant.length
     ? relevant.map((game) => `
       <article class="home-result-card">
-        <div><span class="league-pill">${escapeHtml(game.league === "FIFA World Cup" ? "World Cup" : game.league)}</span><small>Final</small></div>
+        <div><span class="league-pill" style="--league-color:${leagues[game.league]?.color || "#61717f"}">${escapeHtml(game.league === "FIFA World Cup" ? "World Cup" : game.league)}</span><small>Final</small></div>
         <p><span>${teamIconHtml(game.home, game.league, "home-result-logo")}${escapeHtml(game.home)}</span><strong>${scoreText(game, "home")}</strong></p>
         <p><span>${teamIconHtml(game.away, game.league, "home-result-logo")}${escapeHtml(game.away)}</span><strong>${scoreText(game, "away")}</strong></p>
         ${chatButtonTemplate(game, chatWindowFor(game))}
@@ -837,7 +867,7 @@ function homeFixtureTemplate(game) {
   return `
     <article class="home-fixture-card">
       <div class="home-fixture-meta">
-        <span class="league-pill">${escapeHtml(game.league === "FIFA World Cup" ? "World Cup" : game.league)}</span>
+        <span class="league-pill" style="--league-color:${leagues[game.league]?.color || "#61717f"}">${escapeHtml(game.league === "FIFA World Cup" ? "World Cup" : game.league)}</span>
         <span>${escapeHtml(game.round || "")}</span>
       </div>
       <div class="home-fixture-teams">
@@ -1033,7 +1063,9 @@ function renderFollowingSurface(scheduleSource, liveGames) {
     </section>
     <section class="following-block">
       <div class="section-heading compact"><div><p class="section-kicker">For you</p><h3>${relevantLive.length ? "Live now" : "Coming up"}</h3></div></div>
-      <div class="home-next-list">${(relevantLive.length ? relevantLive : next).map(homeFixtureTemplate).join("") || `<p class="empty-state">No matching games found.</p>`}</div>
+      <div class="${relevantLive.length ? "room-card-list" : "home-next-list"}">${relevantLive.length
+        ? relevantLive.map((game) => roomCardTemplate(game, chatWindowFor(game), true)).join("")
+        : next.map(homeFixtureTemplate).join("") || `<p class="empty-state">No matching games found.</p>`}</div>
     </section>
   `;
 }

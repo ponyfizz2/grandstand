@@ -20,12 +20,12 @@
     <meta name="twitter:image" content="https://ponyfizz2.github.io/grandstand/brand/sportlysocial-social-preview.png">
     <title>SportlySocial — Live scores and match rooms</title>
     <link rel="icon" type="image/png" href="brand/favicon.png">
-    <link rel="manifest" href="manifest.json?v=33">
+    <link rel="manifest" href="manifest.json?v=34">
     <link rel="apple-touch-icon" href="brand/apple-touch-icon.png">
-    <link rel="stylesheet" href="css/styles.css?v=33">
+    <link rel="stylesheet" href="css/styles.css?v=34">
   </head>
   <body data-theme="dark">
-    <div class="build-badge" id="build-badge">SPORTLYSOCIAL v33 · otter brand</div>
+    <div class="build-badge" id="build-badge">SPORTLYSOCIAL v34 · mobile focus</div>
 
     <!-- Auth Modal -->
     <div id="auth-modal" class="modal-overlay is-hidden" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
@@ -109,7 +109,7 @@
           </div>
           <!-- Step 3: Identity and display -->
           <div id="onboarding-step-3" class="is-hidden">
-            <h2>Set your match-day identity <span class="build-inline">v33</span></h2>
+            <h2>Set your match-day identity <span class="build-inline">v34</span></h2>
             <p class="modal-subtitle">Choose your timezone, favourite team and chat icon.</p>
             <div class="field-group">
               <label class="field-label" for="onboarding-tz-select">Time zone</label>
@@ -391,6 +391,10 @@
         <button type="button" class="btn-icon" id="btn-global-search" aria-label="Search SportlySocial">
           <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
         </button>
+        <button type="button" class="btn-icon btn-theme-toggle" id="btn-theme-toggle" aria-label="Switch to light mode" title="Switch theme">
+          <svg class="theme-icon theme-icon-light" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.42-1.41M17.66 6.34l1.41-1.41"/></svg>
+          <svg class="theme-icon theme-icon-dark" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8Z"/></svg>
+        </button>
         <div id="auth-header-area" class="auth-header-area"></div>
       </div>
     </header>
@@ -445,17 +449,17 @@
 
       <div class="app-view-stack">
         <section class="app-view active" id="view-home" data-app-view-panel="home">
-          <div class="page-intro">
-            <div><p class="section-kicker">Home</p><h2>The game is on. Join the crowd.</h2><p>Live scores, match rooms and fan conversation in one place.</p></div>
+          <div class="page-intro home-intro">
+            <div><p class="section-kicker">Home</p><h2>Your games</h2><p>Live scores, upcoming fixtures and open match rooms.</p></div>
           </div>
           <section class="favorite-live" id="favorite-live" aria-label="Live now for you">
             <div class="favorite-live-heading">
-              <div><p class="section-kicker" id="favorite-live-kicker">Live now</p><h2 id="favorite-live-title">Live now for you</h2></div>
+              <div><p class="section-kicker" id="favorite-live-kicker">For you</p><h2 id="favorite-live-title">Live now</h2></div>
               <span id="favorite-live-updated"></span>
             </div>
             <div class="favorite-live-list" id="favorite-live-list"></div>
           </section>
-          <section class="home-section" aria-labelledby="joinable-title">
+          <section class="home-section home-rooms-section" aria-labelledby="joinable-title">
             <div class="section-heading compact">
               <div><p class="section-kicker">Room open</p><h2 id="joinable-title">Joinable rooms</h2></div>
               <button type="button" class="text-action" data-app-view="rooms">See all rooms</button>
@@ -479,7 +483,7 @@
         </section>
 
         <section class="app-view" id="view-rooms" data-app-view-panel="rooms">
-          <div class="page-intro"><div><p class="section-kicker">Match rooms</p><h2>There is a room for every game</h2><p>Join before kickoff, stay through the action, and revisit the conversation after full time.</p></div></div>
+          <div class="page-intro"><div><p class="section-kicker">Match rooms</p><h2>Join the crowd</h2><p>Live, pre-game and post-game conversations.</p></div></div>
           <div class="room-state-filters" id="room-state-filters" role="tablist" aria-label="Room state">
             <button type="button" class="active" role="tab" aria-selected="true" data-room-filter="all">All</button>
             <button type="button" role="tab" aria-selected="false" data-room-filter="live">Live</button>
@@ -497,7 +501,7 @@
 
         <section class="app-view" id="view-scores" data-app-view-panel="scores">
           <div class="page-intro scores-intro">
-            <div><p class="section-kicker">Scores</p><h2>Every game, one clean view</h2></div>
+            <div><p class="section-kicker">Scores</p><h2>Games and tables</h2></div>
             <button type="button" class="filter-trigger" id="btn-mobile-filters">Filters <span aria-hidden="true">⌄</span></button>
           </div>
           <div class="score-tabs segmented" id="mode-filters" role="tablist" aria-label="Score view">
@@ -522,12 +526,12 @@
         </section>
 
         <section class="app-view" id="view-following" data-app-view-panel="following">
-          <div class="page-intro"><div><p class="section-kicker">Following</p><h2>Your teams and competitions</h2><p>Live games and rooms from the sports you care about most.</p></div></div>
+          <div class="page-intro"><div><p class="section-kicker">Following</p><h2>Your sports</h2><p>Teams and competitions you follow.</p></div></div>
           <div id="following-content" class="following-content"></div>
         </section>
 
         <section class="app-view" id="view-profile" data-app-view-panel="profile">
-          <div class="page-intro"><div><p class="section-kicker">Profile</p><h2>Your SportlySocial identity</h2><p>Manage how you appear in match rooms and how SportlySocial works for you.</p></div></div>
+          <div class="page-intro"><div><p class="section-kicker">Profile</p><h2>Your account</h2><p>Identity, preferences and display settings.</p></div></div>
           <div id="profile-content" class="profile-content"></div>
         </section>
       </div>
@@ -573,13 +577,13 @@
     <script>
       window.GRANDSTAND_EXPECTED_AUTH_BUILD = "github-pages-auth-v22";
     </script>
-    <script src="brand/brand.js?v=33"></script>
-    <script src="js/config.js?v=33"></script>
-    <script src="js/identity.js?v=33"></script>
-    <script src="js/auth-v22.js?v=33"></script>
-    <script src="js/chat.js?v=33"></script>
-    <script src="js/script.js?v=33"></script>
-    <script src="js/sw-register.js?v=33"></script>
+    <script src="brand/brand.js?v=34"></script>
+    <script src="js/config.js?v=34"></script>
+    <script src="js/identity.js?v=34"></script>
+    <script src="js/auth-v22.js?v=34"></script>
+    <script src="js/chat.js?v=34"></script>
+    <script src="js/script.js?v=34"></script>
+    <script src="js/sw-register.js?v=34"></script>
     <script>
       (() => {
         const expected = window.GRANDSTAND_EXPECTED_AUTH_BUILD;

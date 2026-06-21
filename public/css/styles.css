@@ -212,6 +212,10 @@ body[data-theme="dark"] .brand-logo-dark {
 
 .auth-header-area { display: flex; align-items: center; }
 
+.theme-icon-dark { display: none; }
+body[data-theme="light"] .theme-icon-light { display: none; }
+body[data-theme="light"] .theme-icon-dark { display: block; }
+
 /* ── Buttons ─────────────────────────────────────────────── */
 button {
   flex: 1 1 auto;
@@ -2350,22 +2354,39 @@ body.onboarding-complete #onboarding-modal {
 
 /* ── SportlySocial application shell ─────────────────────── */
 :root {
-  --bg: #07131C;
-  --surface: #101D28;
-  --surface-raised: #162635;
-  --text: #F3F7FA;
-  --text-muted: #A7B4C0;
-  --primary: #5DA8FF;
-  --accent: #44D7A8;
+  --bg: var(--paper);
+  --surface: var(--panel);
+  --surface-raised: var(--panel-raised);
+  --text: var(--ink);
+  --text-muted: var(--muted);
+  --primary: var(--brand-cyan);
+  --accent: #168966;
   --live: #F05A5A;
-  --pregame: #F5A742;
-  --final: #9AA8B5;
-  --success: #44D7A8;
-  --warning: #F5A742;
-  --danger: #F05A5A;
+  --pregame: #B66A00;
+  --final: #667684;
+  --success: #168966;
+  --warning: #B66A00;
+  --danger: #C73D32;
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 18px;
+  --shadow-card: 0 10px 28px rgba(24, 42, 63, 0.1);
+}
+
+body[data-theme="dark"] {
+  --bg: var(--brand-bg);
+  --surface: var(--brand-surface);
+  --surface-raised: #162635;
+  --text: var(--brand-text);
+  --text-muted: var(--brand-muted);
+  --primary: var(--brand-cyan);
+  --accent: var(--brand-teal);
+  --live: var(--brand-live);
+  --pregame: #F5A742;
+  --final: #9AA8B5;
+  --success: var(--brand-teal);
+  --warning: #F5A742;
+  --danger: var(--brand-live);
   --shadow-card: 0 12px 30px rgba(0, 0, 0, 0.24);
 }
 
@@ -2545,6 +2566,12 @@ select:focus-visible {
 .discovery-rail .segmented button {
   border: 1px solid var(--line);
   background: var(--surface);
+}
+
+.discovery-rail .segmented button.active {
+  border-color: var(--navy);
+  background: var(--navy);
+  color: #fff;
 }
 
 .secondary-counts {
@@ -2788,7 +2815,12 @@ select:focus-visible {
   gap: 8px;
   margin-bottom: 18px;
   overflow-x: auto;
+  scrollbar-width: none;
 }
+
+.room-state-filters::-webkit-scrollbar,
+.score-tabs::-webkit-scrollbar,
+.compact-filter-row::-webkit-scrollbar { display: none; }
 
 .room-state-filters button,
 .compact-filter-row button {
@@ -2947,17 +2979,34 @@ select:focus-visible {
     margin-bottom: 16px;
   }
 
+  .live-now-strip.is-empty { display: none; }
   .live-now-strip > button { display: none; }
   .live-strip-label { padding-right: 10px; font-size: 0.68rem; }
   .live-strip-game { max-width: 255px; padding-inline: 10px; }
   .live-strip-game span { display: none; }
   .live-strip-game strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-  .page-intro { margin-bottom: 18px; }
-  .page-intro h2 { font-size: 1.65rem; }
-  .page-intro p:last-child { font-size: 0.88rem; }
-  .favorite-live-heading { flex-direction: row; align-items: end; }
+  .page-intro { margin-bottom: 14px; }
+  .page-intro h2 { margin-bottom: 0; font-size: 1.35rem; }
+  .page-intro p:last-child { display: none; }
+  .home-intro { display: none; }
+  .favorite-live { margin-bottom: 22px; }
+  .favorite-live-heading { flex-direction: row; align-items: end; margin-bottom: 9px; }
+  .favorite-live-heading h2 { font-size: 1.05rem; }
+  .favorite-live-heading > span { font-size: 0.68rem; }
   .favorite-live-list { display: flex; }
+  .favorite-live-list {
+    scrollbar-width: none;
+  }
+  .favorite-live-list::-webkit-scrollbar { display: none; }
+  .favorite-live-card {
+    flex-basis: min(88vw, 340px);
+    padding: 13px;
+    box-shadow: none;
+  }
+  .favorite-live-teams { gap: 6px; }
+  .favorite-live-teams > span { font-size: 0.76rem; }
+  .favorite-live-action { font-size: 0.72rem; }
 
   .room-card-list,
   .home-next-list,
@@ -2965,7 +3014,36 @@ select:focus-visible {
   .room-directory { grid-template-columns: 1fr; }
 
   .room-card,
-  .home-fixture-card { padding: 14px; }
+  .home-fixture-card { padding: 14px; box-shadow: none; }
+
+  #view-home .home-section { margin-bottom: 24px; }
+  #view-home .home-section .section-kicker { display: none; }
+  #view-home .section-heading.compact h2 { font-size: 1.08rem; }
+  #view-home #home-room-list:has(.empty-state) {
+    display: none;
+  }
+  #view-home .home-section:has(#home-room-list .empty-state) {
+    display: none;
+  }
+  #view-home:has(.favorite-live.has-live) .home-rooms-section {
+    display: none;
+  }
+  #view-home .home-result-list:has(.empty-state) {
+    display: none;
+  }
+  #view-home .home-section:has(#home-result-list .empty-state) {
+    display: none;
+  }
+
+  .room-state-filters {
+    margin-bottom: 14px;
+    padding-bottom: 2px;
+  }
+  .room-counts {
+    gap: 12px;
+    justify-content: space-between;
+    font-size: 0.75rem;
+  }
 
   .score-tabs {
     width: 100%;
@@ -2987,8 +3065,11 @@ select:focus-visible {
   .profile-grid { grid-template-columns: 1fr; }
   .profile-connections { align-items: stretch; flex-direction: column; }
   .guest-action > div { flex-direction: column; }
+  .guest-action { padding: 22px 16px; }
+  .guest-action h3 { margin-bottom: 8px; font-size: 1rem; }
+  .guest-action p { margin-bottom: 16px; font-size: 0.82rem; }
 
-  .source-band { margin-bottom: 20px; }
+  .source-band { display: none; }
 }
 
 /* ── Print ───────────────────────────────────────────────── */

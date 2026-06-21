@@ -10,7 +10,7 @@
 (function () {
   "use strict";
 
-  const BUILD = "sportlysocial-otter-brand-v33";
+  const BUILD = "sportlysocial-mobile-focus-v34";
   const CLEANUP_KEY = `gs.cacheCleanup.${BUILD}`;
 
   window.gs = window.gs || {};

@@ -10,7 +10,7 @@
  * Cache names are versioned — bump CACHE_VERSION on each deploy.
  */
 
-const CACHE_VERSION    = 'sportlysocial-v33';
+const CACHE_VERSION    = 'sportlysocial-v34';
 const SHELL_CACHE      = `${CACHE_VERSION}-shell`;
 const DATA_CACHE       = `${CACHE_VERSION}-data`;
 const ESPN_CACHE_TTL   = 5 * 60 * 1000; // 5 minutes
